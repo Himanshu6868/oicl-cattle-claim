@@ -5,16 +5,14 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 10px 8px;
+  padding: 10px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login-card {
-  width: 360px;
-  max-width: 100%;
+  width: 330px;
   background: #eceef2;
-  border-radius: 0;
-  padding: 14px 20px 18px;
+  padding: 15px;
   position: relative;
   box-sizing: border-box;
   color: #102040;
@@ -22,40 +20,26 @@
 
 .close-btn {
   position: absolute;
-  right: 10px;
-  top: 6px;
+  right: 8px;
+  top: 5px;
   border: 0;
   background: transparent;
-  color: #8a8d95;
-  font-size: 34px;
-  line-height: 1;
+  font-size: 18px;
   cursor: pointer;
 }
 
 h1 {
-  margin: 0 24px;
   text-align: center;
-  font-size: 50px;
-  line-height: 1.02;
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .sub-line,
 .note-line {
-  margin: 10px 0 0;
+  font-size: 12px;
   text-align: center;
-  color: #3d4f72;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-.note-line {
-  margin-top: 2px;
-}
-
-.note-line strong {
-  color: #24365a;
+  margin: 2px 0;
 }
 
 .note-line a,
@@ -63,25 +47,21 @@ h1 {
 .forgot {
   color: #2e61df;
   text-decoration: none;
-  font-weight: 600;
 }
 
 .tab-row {
-  margin-top: 18px;
+  margin-top: 12px;
   display: flex;
   border-bottom: 1px solid #d6dae4;
 }
 
 .tab {
   flex: 1;
-  background: transparent;
   border: 0;
-  color: #6b7487;
-  padding: 10px 4px 8px;
-  font-size: 31px;
-  font-weight: 600;
+  background: transparent;
+  font-size: 12px;
+  padding: 6px;
   cursor: pointer;
-  line-height: 1.05;
 }
 
 .tab.active {
@@ -90,62 +70,53 @@ h1 {
 }
 
 .field-wrap {
-  margin-top: 12px;
+  width: 300px;
+  margin: 8px auto 0;
   border: 1px solid #b9c1d1;
-  border-radius: 8px;
-  background: #eceef2;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 10px;
+  background: #fff;
 }
 
 .field-wrap input {
-  flex: 1;
-  border: 0;
-  background: transparent;
-  height: 44px;
-  font-size: 35px;
-  color: #4d5568;
+  width: 100%;
+  height: 36px;
+  border: none;
   outline: none;
-}
-
-.field-wrap input::placeholder {
-  color: #9ca5b7;
+  font-size: 12px;
 }
 
 .trailing-icon,
 .eye {
-  color: #a0a8b8;
-  font-size: 16px;
+  font-size: 12px;
+  color: #888;
 }
 
 .forgot {
-  margin-right: 8px;
-  font-size: 28px;
+  font-size: 12px;
+  margin-right: 6px;
 }
 
 .captcha-label {
   display: block;
-  margin-top: 12px;
-  font-size: 43px;
-  font-weight: 700;
-  color: #1d2744;
-}
-
-.captcha-label span {
-  color: #d54646;
+  width: 300px;
+  margin: 10px auto 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .captcha-row {
-  margin-top: 8px;
+  width: 300px;
+  margin: 6px auto 0;
   display: grid;
-  grid-template-columns: 1fr 48px 48px;
+  grid-template-columns: 1fr 36px 36px;
   gap: 6px;
 }
 
 .captcha-box {
-  height: 50px;
-  border-radius: 8px;
+  height: 36px;
   background: repeating-linear-gradient(
     -45deg,
     #1f4f8f,
@@ -153,134 +124,80 @@ h1 {
     #1d4a86 5px,
     #1d4a86 10px
   );
-  color: #f7f9ff;
+  color: white;
+  font-size: 16px;
+  letter-spacing: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
-  letter-spacing: 4px;
-  font-size: 45px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-weight: 700;
 }
 
 .icon-btn {
-  border: 0;
-  border-radius: 8px;
+  border: none;
   background: #2f66e0;
-  color: #fff;
-  font-size: 24px;
+  color: white;
+  border-radius: 4px;
   cursor: pointer;
 }
 
 .help-text {
-  margin: 8px 0 10px;
-  font-size: 14px;
+  width: 300px;
+  margin: 6px auto;
+  font-size: 12px;
   color: #768099;
-  line-height: 1.2;
 }
 
 .login-btn {
-  width: 100%;
-  height: 46px;
-  border: 0;
-  border-radius: 8px;
+  width: 300px;
+  height: 38px;
+  margin: 8px auto 0;
+  display: block;
+  border: none;
   background: #cf450e;
-  color: #fff;
-  font-size: 45px;
-  font-weight: 700;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
   cursor: pointer;
 }
 
 .divider {
-  margin: 14px 0 10px;
-  position: relative;
+  margin: 10px 0;
   text-align: center;
+  font-size: 12px;
   color: #7c8598;
-  font-size: 45px;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 35%;
-  border-top: 1px solid #d4d8e2;
-}
-
-.divider::before {
-  left: 0;
-}
-
-.divider::after {
-  right: 0;
 }
 
 .social-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  width: 300px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
 }
 
 .social-btn {
+  width: 85px;
+  height: 32px;
   border: 1px solid #c5ccd9;
-  border-radius: 999px;
+  border-radius: 20px;
   background: #f8f9fb;
-  color: #1d2744;
-  min-height: 42px;
-  font-size: 39px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .guide-btn {
+  width: 200px;
+  height: 32px;
   margin: 10px auto 0;
   display: block;
   border: 1px solid #c5ccd9;
-  border-radius: 999px;
+  border-radius: 20px;
   background: #f8f9fb;
-  color: #263252;
-  min-height: 40px;
-  padding: 0 16px;
-  font-size: 37px;
+  font-size: 12px;
 }
 
 .signup-line {
-  margin: 10px 0 0;
   text-align: center;
-  color: #3e4558;
-  font-size: 44px;
-}
-
-@media (max-width: 920px) {
-  .login-card {
-    width: min(360px, 100%);
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 50px;
-  }
-
-  .tab {
-    font-size: 31px;
-  }
-
-  .field-wrap input {
-    font-size: 35px;
-  }
-
-  .captcha-label {
-    font-size: 43px;
-  }
-
-  .captcha-box {
-    font-size: 45px;
-  }
-
-  .login-btn,
-  .divider,
-  .social-btn,
-  .guide-btn,
-  .signup-line {
-    font-size: clamp(35px, 8.8vw, 45px);
-  }
+  margin-top: 8px;
+  font-size: 12px;
 }
