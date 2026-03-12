@@ -1,0 +1,260 @@
+.page-bg {
+  min-height: 100vh;
+  margin: 0;
+  background: #9ea0a4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-card {
+  width: 400px;
+  max-width: 100%;
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 24px 26px 20px;
+  position: relative;
+  box-sizing: border-box;
+  color: #102040;
+}
+
+.close-btn {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  border: 0;
+  background: transparent;
+  color: #8a8d95;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 38px;
+  line-height: 1.15;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 700;
+}
+
+.sub-line,
+.note-line {
+  margin: 10px 0 0;
+  text-align: center;
+  color: #50576a;
+  font-size: 15px;
+}
+
+.note-line {
+  margin-top: 4px;
+}
+
+.note-line a,
+.signup-line a,
+.forgot {
+  color: #2e61df;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.tab-row {
+  margin-top: 24px;
+  display: flex;
+  border-bottom: 1px solid #d6dae4;
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: #6b7487;
+  padding: 12px 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: #2e61df;
+  border-bottom: 3px solid #2e61df;
+}
+
+.field-wrap {
+  margin-top: 16px;
+  border: 1px solid #cdd2dd;
+  border-radius: 8px;
+  background: #f7f8fa;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.field-wrap input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  height: 52px;
+  font-size: 24px;
+  color: #4d5568;
+  outline: none;
+}
+
+.field-wrap input::placeholder {
+  color: #a0a8b8;
+}
+
+.trailing-icon,
+.eye {
+  color: #a0a8b8;
+  font-size: 18px;
+}
+
+.forgot {
+  margin-right: 14px;
+}
+
+.captcha-label {
+  display: block;
+  margin-top: 16px;
+  font-size: 29px;
+  font-weight: 700;
+  color: #1d2744;
+}
+
+.captcha-label span {
+  color: #d54646;
+}
+
+.captcha-row {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 56px 56px;
+  gap: 6px;
+}
+
+.captcha-box {
+  height: 58px;
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #1f4f8f,
+    #1f4f8f 5px,
+    #1d4a86 5px,
+    #1d4a86 10px
+  );
+  color: #f7f9ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: 6px;
+  font-size: 39px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 700;
+}
+
+.icon-btn {
+  border: 0;
+  border-radius: 8px;
+  background: #2f66e0;
+  color: #fff;
+  font-size: 29px;
+  cursor: pointer;
+}
+
+.help-text {
+  margin: 8px 0 14px;
+  font-size: 15px;
+  color: #768099;
+}
+
+.login-btn {
+  width: 100%;
+  height: 56px;
+  border: 0;
+  border-radius: 10px;
+  background: #cf450e;
+  color: #fff;
+  font-size: 35px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.divider {
+  margin: 20px 0 14px;
+  position: relative;
+  text-align: center;
+  color: #7c8598;
+  font-size: 30px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 37%;
+  border-top: 1px solid #d4d8e2;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.social-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.social-btn {
+  border: 1px solid #c5ccd9;
+  border-radius: 999px;
+  background: #f8f9fb;
+  color: #1d2744;
+  min-height: 48px;
+  font-size: 24px;
+}
+
+.guide-btn {
+  margin: 12px auto 0;
+  display: block;
+  border: 1px solid #c5ccd9;
+  border-radius: 999px;
+  background: #f8f9fb;
+  color: #263252;
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 26px;
+}
+
+.signup-line {
+  margin: 14px 0 0;
+  text-align: center;
+  color: #3e4558;
+  font-size: 30px;
+}
+
+@media (max-width: 780px) {
+  h1 {
+    font-size: 38px;
+  }
+
+  .field-wrap input,
+  .captcha-label,
+  .login-btn,
+  .divider,
+  .social-btn,
+  .guide-btn,
+  .signup-line,
+  .captcha-box {
+    font-size: clamp(18px, 4.8vw, 34px);
+  }
+}
