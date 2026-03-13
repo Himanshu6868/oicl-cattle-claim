@@ -1,156 +1,192 @@
-.cattle-page{
-  max-width:1200px;
-  margin:auto;
-  padding:30px;
+.cattle-page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
 }
 
-/* BREADCRUMB */
-
-.breadcrumb{
-  font-size:14px;
-  color:#444;
+.breadcrumb {
+  font-size: 14px;
+  color: #444;
 }
 
-/* PROGRESS BAR */
-
-.progress-wrapper{
-  width:603px;
-  height:79px;
-
-  margin:30px auto;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.progress-wrapper {
+  width: 603px;
+  height: 79px;
+  margin: 30px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.step{
-  text-align:center;
+.step {
+  text-align: center;
 }
 
-.circle{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:#1b65c9;
-  color:white;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-weight:600;
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1b65c9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
-.circle.grey{
-  background:#d6d6d6;
-  color:#333;
+.circle.grey {
+  background: #d6d6d6;
+  color: #333;
 }
 
-.line{
-  width:200px;
-  height:3px;
-  background:#d6d6d6;
-  margin:0 15px;
+.line {
+  width: 200px;
+  height: 3px;
+  background: #d6d6d6;
+  margin: 0 15px;
 }
 
-.step-text{
-  margin-top:8px;
-  font-size:14px;
+.step-text {
+  margin-top: 8px;
+  font-size: 14px;
 }
 
-/* TITLE */
-
-.title-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:20px;
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.cattle-title{
-  font-size:24px;
-  font-weight:600;
+.cattle-title {
+  font-size: 24px;
+  font-weight: 600;
 }
 
-.back-btn{
-  border:none;
-  background:none;
-  font-size:20px;
-  cursor:pointer;
+.back-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-/* LAYOUT */
-
-.content-layout{
-  display:flex;
-  align-items:center;
-  gap:60px;
-  margin-top:40px;
+.content-layout {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  margin-top: 40px;
 }
 
-/* CLAIM BOX */
-
-.claim-box{
-  width:750px;
-  height:256px;
-
-  border:1px solid #1b65c9;
-  border-radius:4px;
-
-  background:#fff;
+.claim-box,
+.upload-box {
+  width: 100%;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  background: #fff;
 }
 
-.claim-header{
-  background:#eef1f4;
-  padding:12px 16px;
-  font-weight:600;
+.claim-header {
+  background: #eef1f4;
+  padding: 12px 16px;
+  font-weight: 600;
 }
 
-/* FORM */
-
-.form-row{
-  display:flex;
-  gap:30px;
-  padding:25px;
+.form-row {
+  display: flex;
+  gap: 30px;
+  padding: 25px;
 }
 
-.field{
-  flex:1;
+.field {
+  flex: 1;
 }
 
-.field label{
-  font-size:14px;
-  display:block;
-  margin-bottom:6px;
+.field label {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 6px;
 }
 
-.field input{
-  width:100%;
-  height:42px;
-  border:1px solid #ddd;
-  border-radius:6px;
-  padding:10px;
+.field input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
 }
 
-/* BUTTON */
-
-.next-btn{
-  margin-left:25px;
-
-  width:160px;
-  height:40px;
-
-  background:#c85100;
-  color:white;
-
-  border:none;
-  border-radius:4px;
+.field-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 6px;
 }
 
-/* IMAGE */
+.next-btn {
+  margin: 0 25px 25px;
+  width: 160px;
+  height: 40px;
+  background: #c85100;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-.cattle-image{
-  width:449px;
-  height:237px;
+.cattle-image {
+  width: 449px;
+  height: 237px;
+}
+
+.upload-box {
+  margin-top: 24px;
+}
+
+.upload-form-row {
+  align-items: flex-start;
+}
+
+.upload-input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.helper-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.file-list {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #2f9e44;
+}
+
+.file-list li {
+  margin-bottom: 6px;
+}
+
+.validate-btn {
+  margin-top: 4px;
+}
+
+@media (max-width: 1024px) {
+  .content-layout,
+  .form-row {
+    flex-direction: column;
+  }
+
+  .progress-wrapper {
+    width: 100%;
+  }
+
+  .cattle-image {
+    width: 100%;
+    height: auto;
+  }
 }
