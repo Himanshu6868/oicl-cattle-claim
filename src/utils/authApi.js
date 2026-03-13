@@ -18,33 +18,41 @@ const getTokenFromResponse = (responseBody) => {
 };
 
 export const loginWithUsernamePassword = async ({ username, password }) => {
-  const payload = await encryptPayload({ userName: username, password });
-
-  const response = await fetch(LOGIN_API_URL, {
-    method: "POST",
-    headers: {
-      accept: "application/json, text/plain, */*",
-      "content-type": "application/json",
-      "x-language": "en",
-      "x-source": "WEB",
-    },
-    body: JSON.stringify({ payload }),
-  });
-
-  let responseBody = null;
   try {
-    responseBody = await response.json();
-  } catch (_error) {
-    responseBody = null;
-  }
+    const payload = encryptPayload({ userName: username, password });
 
-  if (!response.ok) {
-    const errorMessage = responseBody?.message || "Login failed. Please check your credentials.";
-    throw new Error(errorMessage);
-  }
+    const response = await fetch(LOGIN_API_URL, {
+      method: "POST",
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "content-type": "application/json",
+        "x-language": "en",
+        "x-source": "WEB",
+      },
+      body: JSON.stringify({ payload }),
+    });
 
-  return {
-    token: getTokenFromResponse(responseBody),
-    raw: responseBody,
-  };
+    let responseBody = null;
+    try {
+      responseBody = await response.json();
+    } catch (_error) {
+      responseBody = null;
+    }
+
+    if (!response.ok) {
+      const errorMessage = responseBody?.message || "Login failed. Please check your credentials.";
+      throw new Error(errorMessage);
+    }
+
+    return {
+      token: getTokenFromResponse(responseBody),
+      raw: responseBody,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("Unexpected error occurred while logging in.");
+  }
 };
