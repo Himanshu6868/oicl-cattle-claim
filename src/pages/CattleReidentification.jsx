@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import cattleIllustration from "../assets/cattle-illustration.png";
+import { encryptPayload } from "../utils/encryption";
 import "../cattle.css";
+
+const CLAIM_DETAILS_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/save-basic-details";
 
 function CattleReidentification() {
   const navigate = useNavigate();
@@ -12,8 +16,9 @@ function CattleReidentification() {
   const [showUploadSection, setShowUploadSection] = useState(false);
   const [liveImages, setLiveImages] = useState([]);
   const [deadImages, setDeadImages] = useState([]);
+  const [claimDetailsError, setClaimDetailsError] = useState("");
 
-  const handleClaimDetailsNext = () => {
+  const handleClaimDetailsNext = async () => {
     const newErrors = {};
 
     if (!claimNumber.trim()) {
@@ -25,9 +30,47 @@ function CattleReidentification() {
     }
 
     setErrors(newErrors);
+    setClaimDetailsError("");
 
     if (Object.keys(newErrors).length === 0) {
-      setShowUploadSection(true);
+      try {
+        const encryptedPayload = encryptPayload({
+          claimNumber,
+          policyNumber,
+        });
+
+        const response = await fetch(CLAIM_DETAILS_API_URL, {
+          method: "POST",
+          headers: {
+            accept: "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "x-language": "en",
+            "x-source": "WEB",
+          },
+          body: JSON.stringify({
+            payload: encryptedPayload,
+          }),
+        });
+
+        let responseBody = null;
+        try {
+          responseBody = await response.json();
+        } catch (_error) {
+          responseBody = null;
+        }
+
+        if (!response.ok) {
+          throw new Error(responseBody?.message || "Failed to fetch claim details.");
+        }
+
+        setShowUploadSection(true);
+      } catch (error) {
+        setClaimDetailsError(
+          error instanceof Error
+            ? error.message
+            : "Unexpected error occurred while fetching claim details.",
+        );
+      }
     }
   };
 
@@ -109,6 +152,7 @@ function CattleReidentification() {
             <button className="next-btn" onClick={handleClaimDetailsNext}>
               Next
             </button>
+            {claimDetailsError ? <p className="field-error">{claimDetailsError}</p> : null}
           </div>
 
           {!showUploadSection ? (
