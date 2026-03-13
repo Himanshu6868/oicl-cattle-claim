@@ -101,6 +101,10 @@
   flex: 1;
 }
 
+.upload-field {
+  position: relative;
+}
+
 .field label {
   font-size: 14px;
   display: block;
@@ -200,10 +204,28 @@
   cursor: pointer;
 }
 
-.helper-text {
-  font-size: 26px;
-  color: #3f3f3f;
-  margin-top: 10px;
+.upload-helper-text {
+  color: #000;
+  font-size: 14px;
+  font-weight: 300;
+  position: absolute;
+  top: 15px;
+  white-space: nowrap;
+}
+
+.supported-file-text {
+  font-family: "Noto Sans";
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+.file-saved-text {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 26px;
+  color: #3ad683 !important;
 }
 
 .file-list {

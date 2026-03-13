@@ -305,7 +305,7 @@ function CattleReidentification() {
             <div className="claim-header">Upload Cattle Photos</div>
 
             <div className="form-row upload-form-row">
-              <div className="field">
+              <div className="field upload-field">
                 <label className="upload-control">
                   <input
                     className="upload-input"
@@ -321,12 +321,18 @@ function CattleReidentification() {
                     🔗
                   </span>
                 </label>
-                <p className="helper-text">Supported File Type: .png, .jpg</p>
+                {!liveImages.length ? (
+                  <p className="upload-helper-text supported-file-text">
+                    Supported File Type: .png, .jpg
+                  </p>
+                ) : (
+                  <p className="file-saved-text">File saved</p>
+                )}
 
                 <ul className="file-list">
                   {liveImages.map((file) => (
                     <li className="uploaded-file-row" key={file.id}>
-                      <span className="uploaded-file-name">{file.fileName}</span>
+                      <span className="file-saved-text">File saved</span>
 
                       <div className="file-actions">
                         <button
@@ -350,7 +356,7 @@ function CattleReidentification() {
                 </ul>
               </div>
 
-              <div className="field">
+              <div className="field upload-field">
                 <label className="upload-control">
                   <input
                     className="upload-input"
@@ -366,12 +372,18 @@ function CattleReidentification() {
                     🔗
                   </span>
                 </label>
-                <p className="helper-text">Supported File Type: .png, .jpg</p>
+                {!deadImages.length ? (
+                  <p className="upload-helper-text supported-file-text">
+                    Supported File Type: .png, .jpg
+                  </p>
+                ) : (
+                  <p className="file-saved-text">File saved</p>
+                )}
 
                 <ul className="file-list">
                   {deadImages.map((file) => (
                     <li className="uploaded-file-row" key={file.id}>
-                      <span className="uploaded-file-name">{file.fileName}</span>
+                      <span className="file-saved-text">File saved</span>
 
                       <div className="file-actions">
                         <button
