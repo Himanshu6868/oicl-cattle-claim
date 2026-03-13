@@ -1,16 +1,13 @@
 import CryptoJS from "crypto-js";
 
-const ENCRYPTION_KEY = import.meta.env.VITE_LOGIN_ENCRYPTION_KEY;
+const SECRET_KEY = import.meta.env.VITE_LOGIN_ENCRYPTION_KEY || "";
 
-export type EncryptablePayload = Record<string, unknown>;
-
-export const encryptPayload = (payload: EncryptablePayload): string => {
-  if (!ENCRYPTION_KEY) {
-    throw new Error("Missing VITE_LOGIN_ENCRYPTION_KEY for login payload encryption.");
+export const encryptPayload = (payload: unknown): string => {
+  if (!SECRET_KEY) {
+    throw new Error("Missing VITE_LOGIN_ENCRYPTION_KEY");
   }
 
-  const jsonPayload = JSON.stringify(payload);
-  const encrypted = CryptoJS.AES.encrypt(jsonPayload, ENCRYPTION_KEY).toString();
+  const payloadString = JSON.stringify(payload);
 
-  return encrypted;
+  return CryptoJS.AES.encrypt(payloadString, SECRET_KEY).toString();
 };
