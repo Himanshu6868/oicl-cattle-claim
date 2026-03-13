@@ -374,13 +374,10 @@ function CattleReidentification() {
                     🔗
                   </span>
                 </label>
-                {!liveImages.length ? (
                   <p className="upload-helper-text supported-file-text">
                     Supported File Type: .png, .jpg
                   </p>
-                ) : (
-                  <p className="file-saved-text">File saved</p>
-                )}
+               
 
                 <ul className="file-list">
                   {liveImages.map((file) => (
