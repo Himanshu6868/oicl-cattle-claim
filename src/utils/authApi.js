@@ -1,7 +1,7 @@
 import { encryptPayload } from "./encryption";
 
 const LOGIN_API_URL =
-  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/auth/login/user-name";
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/auth/login/password";
 
 const getTokenFromResponse = (responseBody) => {
   if (!responseBody || typeof responseBody !== "object") {
