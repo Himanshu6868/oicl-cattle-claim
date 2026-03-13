@@ -1,14 +1,44 @@
-import "../App.css"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import "../App.css";
+import { useNavigate } from "react-router-dom";
+import { loginWithUsernamePassword } from "../utils/authApi";
+import { setAuthToken } from "../utils/auth";
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate()
+  const handleLogin = async () => {
+    if (!username || !password) {
+      setErrorMessage("Please enter both username and password.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const { token } = await loginWithUsernamePassword({ username, password });
+
+      if (!token) {
+        throw new Error("Token missing in login response.");
+      }
+
+      setAuthToken(token);
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      setErrorMessage(error.message || "Unable to login.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="page-bg">
       <section className="login-card">
-
         <h1>Login To Your OICL Account</h1>
 
         <p className="sub-line">
@@ -16,7 +46,13 @@ function LoginPage() {
         </p>
 
         <p className="note-line">
-          <strong>Note:</strong> Click <a href="#">here</a> to view important guidelines before proceeding
+          <strong>Note:</strong>
+          {" "}
+          Click
+          {" "}
+          <a href="#">here</a>
+          {" "}
+          to view important guidelines before proceeding
         </p>
 
         <div className="tab-row">
@@ -24,8 +60,19 @@ function LoginPage() {
           <button className="tab">Mobile Number/Email ID</button>
         </div>
 
-        <input className="input-field" placeholder="Username *" />
-        <input className="input-field" placeholder="Password *" />
+        <input
+          className="input-field"
+          placeholder="Username *"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+        />
+        <input
+          className="input-field"
+          placeholder="Password *"
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
 
         <div className="captcha-label">Captcha *</div>
 
@@ -33,11 +80,16 @@ function LoginPage() {
 
         <input className="input-field" placeholder="Enter Captcha" />
 
+        {errorMessage && (
+          <p style={{ color: "#b3261e", marginBottom: "8px", fontSize: "14px" }}>{errorMessage}</p>
+        )}
+
         <button
           className="login-btn"
-          onClick={() => navigate("/dashboard")}
+          onClick={handleLogin}
+          disabled={isSubmitting}
         >
-          Login
+          {isSubmitting ? "Logging in..." : "Login"}
         </button>
 
         <div className="divider">Or, login with</div>
@@ -47,10 +99,9 @@ function LoginPage() {
           <button className="social-btn">Facebook</button>
           <button className="social-btn">CSC Connect</button>
         </div>
-
       </section>
     </main>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

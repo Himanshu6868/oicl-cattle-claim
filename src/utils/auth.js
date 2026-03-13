@@ -1,0 +1,15 @@
+export const AUTH_TOKEN_KEY = "oiclAuthToken";
+
+export const getAuthToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const setAuthToken = (token) => {
+  if (token) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+  }
+};
+
+export const clearAuthToken = () => {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+};
+
+export const isAuthenticated = () => Boolean(getAuthToken());
