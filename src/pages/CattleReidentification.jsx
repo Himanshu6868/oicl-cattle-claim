@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
@@ -8,24 +8,24 @@ import "../cattle.css";
 
 const CLAIM_DETAILS_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/save-basic-details";
-const UPLOAD_DOCUMENT_API_URL =
-  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
-const DELETE_DOCUMENT_API_URL =
-  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-doc";
-const FETCH_OCR_DATA_API_URL =
-  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
 function CattleReidentification() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [claimNumber, setClaimNumber] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
   const [errors, setErrors] = useState({});
-  const [showUploadSection, setShowUploadSection] = useState(false);
-  const [liveImages, setLiveImages] = useState([]);
-  const [deadImages, setDeadImages] = useState([]);
   const [claimDetailsError, setClaimDetailsError] = useState("");
-  const [uploadValidationError, setUploadValidationError] = useState("");
-  const [isValidatingUploads, setIsValidatingUploads] = useState(false);
+
+  useEffect(() => {
+    if (state?.claimNumber) {
+      setClaimNumber(state.claimNumber);
+    }
+
+    if (state?.policyNumber) {
+      setPolicyNumber(state.policyNumber);
+    }
+  }, [state]);
 
   const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
 
@@ -94,7 +94,12 @@ function CattleReidentification() {
           policyNumber,
         });
 
-        setShowUploadSection(true);
+        navigate("/cattle-reidentification/upload", {
+          state: {
+            claimNumber: claimNumber.trim(),
+            policyNumber: policyNumber.trim(),
+          },
+        });
       } catch (error) {
         if (error instanceof Error && error.message === "Session expired. Please login again.") {
           return;
@@ -111,248 +116,6 @@ function CattleReidentification() {
         );
       }
     }
-  };
-
-  const getFileExtension = (fileName) => {
-    const extension = fileName.split(".").pop();
-    return extension ? extension.toLowerCase() : "";
-  };
-
-  const getUploadDetails = async ({ fileName, mediaType, documentType }) => {
-    const responseBody = await postEncryptedApiRequest(UPLOAD_DOCUMENT_API_URL, {
-      fileName,
-      mediaType,
-      documentType,
-      claimNumber,
-    });
-
-    const responseData = responseBody?.data ?? responseBody;
-    const uploadUrl =
-      responseData?.uploadUrl ||
-      responseData?.url ||
-      responseBody?.uploadUrl ||
-      responseBody?.url ||
-      null;
-    const documentId =
-      responseData?.id ||
-      responseData?.docId ||
-      responseData?.documentId ||
-      responseBody?.id ||
-      responseBody?.docId ||
-      responseBody?.documentId ||
-      null;
-
-    return { uploadUrl, documentId };
-  };
-
-  const deleteDocumentRequest = async ({ documentId, documentType }) => {
-    const token = getRequestToken();
-
-    if (!token) {
-      throw new Error("Authentication required. Please login again.");
-    }
-
-    const deleteUrl = `${DELETE_DOCUMENT_API_URL}/${encodeURIComponent(
-      documentId,
-    )}?claimNumber=${encodeURIComponent(claimNumber.trim())}`;
-
-    const response = await fetch(deleteUrl, {
-      method: "DELETE",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        "content-type": "application/json",
-        "x-language": "en",
-        "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        payload: await encryptPayload({ documentType }),
-      }),
-    });
-
-    let responseBody = null;
-    try {
-      responseBody = await response.json();
-    } catch (_error) {
-      responseBody = null;
-    }
-
-    if (response.status === 401) {
-      clearAuthToken();
-      localStorage.removeItem("token");
-      navigate("/", { replace: true });
-      throw new Error("Session expired. Please login again.");
-    }
-
-    if (!response.ok) {
-      throw new Error(responseBody?.message || "Failed to delete file.");
-    }
-  };
-
-  const uploadFileToS3 = async (uploadUrl, file) => {
-    const uploadResponse = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type || "application/octet-stream",
-      },
-      body: file,
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error(`S3 upload failed with status ${uploadResponse.status}.`);
-    }
-  };
-
-  const openUploadedFile = (fileUrl) => {
-    window.open(fileUrl, "_blank");
-  };
-
-  const fetchOcrData = async () => {
-    const token = getRequestToken();
-
-    if (!token) {
-      throw new Error("Authentication required. Please login again.");
-    }
-
-    const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(
-      claimNumber.trim(),
-    )}&policyNumber=${encodeURIComponent(policyNumber.trim())}`;
-
-    const response = await fetch(requestUrl, {
-      method: "GET",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        "x-language": "en",
-        "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    let responseBody = null;
-    try {
-      responseBody = await response.json();
-    } catch (_error) {
-      responseBody = null;
-    }
-
-    if (response.status === 401) {
-      clearAuthToken();
-      localStorage.removeItem("token");
-      navigate("/", { replace: true });
-      throw new Error("Session expired. Please login again.");
-    }
-
-    if (!response.ok) {
-      throw new Error(responseBody?.message || "Failed to validate uploaded cattle photos.");
-    }
-
-    return responseBody;
-  };
-
-  const handleUploadDetailsNext = async () => {
-    setUploadValidationError("");
-
-    if (!liveImages.length || !deadImages.length) {
-      setUploadValidationError(
-        "Please upload at least one Live Cattle Photo and one Dead Cattle Photo to continue.",
-      );
-      return;
-    }
-
-    setIsValidatingUploads(true);
-
-    try {
-      await fetchOcrData();
-      navigate("/cattle-reidentification-results");
-    } catch (error) {
-      if (error instanceof Error && error.message === "Session expired. Please login again.") {
-        return;
-      }
-
-      if (error instanceof Error && error.message === "Authentication required. Please login again.") {
-        navigate("/", { replace: true });
-        return;
-      }
-
-      setUploadValidationError(
-        error instanceof Error
-          ? error.message
-          : "Unexpected error occurred while validating uploaded cattle photos.",
-      );
-    } finally {
-      setIsValidatingUploads(false);
-    }
-  };
-
-  const deleteUploadedFile = async ({ type, file }) => {
-    try {
-      await deleteDocumentRequest({
-        documentId: file.documentId || file.id,
-        documentType: type === "live" ? "ALIVE" : "DEAD",
-      });
-
-      if (type === "live") {
-        setLiveImages((previousFiles) =>
-          previousFiles.filter((uploadedFile) => uploadedFile.id !== file.id),
-        );
-        return;
-      }
-
-      setDeadImages((previousFiles) =>
-        previousFiles.filter((uploadedFile) => uploadedFile.id !== file.id),
-      );
-    } catch (error) {
-      console.error("Failed to delete file:", file.fileName, error);
-    }
-  };
-
-  const handleFilesChange = async (event, type) => {
-    const files = Array.from(event.target.files || []);
-    const documentType = type === "live" ? "ALIVE" : "DEAD";
-
-    if (!files.length) {
-      if (type === "live") {
-        setLiveImages([]);
-        return;
-      }
-
-      setDeadImages([]);
-      return;
-    }
-
-    const uploadedFiles = [];
-
-    for (const file of files) {
-      try {
-        const { uploadUrl, documentId } = await getUploadDetails({
-          fileName: file.name,
-          mediaType: getFileExtension(file.name),
-          documentType,
-        });
-
-        if (!uploadUrl || typeof uploadUrl !== "string") {
-          throw new Error("Upload URL missing in upload-docs response.");
-        }
-
-        await uploadFileToS3(uploadUrl, file);
-        uploadedFiles.push({
-          id: documentId || `${file.name}-${file.lastModified}`,
-          documentId,
-          fileName: file.name,
-          url: uploadUrl,
-          rawFile: file,
-        });
-      } catch (error) {
-        console.error("Failed to upload file:", file.name, error);
-      }
-    }
-
-    if (type === "live") {
-      setLiveImages(uploadedFiles);
-      return;
-    }
-
-    setDeadImages(uploadedFiles);
   };
 
   return (
@@ -373,7 +136,7 @@ function CattleReidentification() {
           <div className="line"></div>
 
           <div className="step">
-            <div className={`circle ${showUploadSection ? "" : "grey"}`}>2</div>
+            <div className="circle grey">2</div>
             <div className="step-text">Validate</div>
           </div>
         </div>
@@ -425,128 +188,12 @@ function CattleReidentification() {
             {claimDetailsError ? <p className="field-error">{claimDetailsError}</p> : null}
           </div>
 
-          {!showUploadSection ? (
-            <img
-              src={cattleIllustration}
-              className="cattle-image"
-              alt="Cattle illustration"
-            />
-          ) : null}
+          <img
+            src={cattleIllustration}
+            className="cattle-image"
+            alt="Cattle illustration"
+          />
         </div>
-
-        {showUploadSection ? (
-          <div className="upload-box">
-            <div className="claim-header">Upload Cattle Photos</div>
-
-            <div className="form-row upload-form-row">
-              <div className="field upload-field">
-                <label className="upload-control">
-                  <input
-                    className="upload-input"
-                    type="file"
-                    accept="image/png,image/jpg,image/jpeg"
-                    multiple
-                    onChange={(event) => handleFilesChange(event, "live")}
-                  />
-                  <span className="upload-control-text">
-                    Upload Live Cattle Photos <span className="required-star">*</span>
-                  </span>
-                  <span className="upload-control-icon" aria-hidden="true">
-                    🔗
-                  </span>
-                </label>
-                  <p className="upload-helper-text supported-file-text">
-                    Supported File Type: .png, .jpg
-                  </p>
-               
-
-                <ul className="file-list">
-                  {liveImages.map((file) => (
-                    <li className="uploaded-file-row" key={file.id}>
-                      <span className="file-saved-text">File saved</span>
-
-                      <div className="file-actions">
-                        <button
-                          className="file-btn"
-                          type="button"
-                          onClick={() => openUploadedFile(file.url)}
-                        >
-                          ⬇
-                        </button>
-
-                        <button
-                          className="file-btn"
-                          type="button"
-                          onClick={() => deleteUploadedFile({ type: "live", file })}
-                        >
-                          🗑
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="field upload-field">
-                <label className="upload-control">
-                  <input
-                    className="upload-input"
-                    type="file"
-                    accept="image/png,image/jpg,image/jpeg"
-                    multiple
-                    onChange={(event) => handleFilesChange(event, "dead")}
-                  />
-                  <span className="upload-control-text">
-                    Upload Dead Cattle Photos <span className="required-star">*</span>
-                  </span>
-                  <span className="upload-control-icon" aria-hidden="true">
-                    🔗
-                  </span>
-                </label>
-                  <p className="upload-helper-text supported-file-text">
-                    Supported File Type: .png, .jpg
-                  </p>
-                
-
-                <ul className="file-list">
-                  {deadImages.map((file) => (
-                    <li className="uploaded-file-row" key={file.id}>
-                      <span className="file-saved-text">File saved</span>
-
-                      <div className="file-actions">
-                        <button
-                          className="file-btn"
-                          type="button"
-                          onClick={() => openUploadedFile(file.url)}
-                        >
-                          ⬇
-                        </button>
-
-                        <button
-                          className="file-btn"
-                          type="button"
-                          onClick={() => deleteUploadedFile({ type: "dead", file })}
-                        >
-                          🗑
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <button
-              className="next-btn validate-btn"
-              type="button"
-              onClick={handleUploadDetailsNext}
-              disabled={isValidatingUploads}
-            >
-              {isValidatingUploads ? "Validating..." : "Validate"}
-            </button>
-            {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
-          </div>
-        ) : null}
       </div>
     </div>
   );
