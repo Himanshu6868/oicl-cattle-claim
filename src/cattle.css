@@ -279,7 +279,16 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+    padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-btn-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .validate-btn {
