@@ -179,6 +179,7 @@
     position: absolute;
     top: 15px;
     white-space: nowrap;
+	left:9px;
 }
 
 .required-star {
