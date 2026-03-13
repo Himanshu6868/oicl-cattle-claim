@@ -126,15 +126,22 @@ function CattleReidentification() {
 
             <div className="form-row upload-form-row">
               <div className="field">
-                <label>Upload Live Cattle Photos *</label>
-                <input
-                  className="upload-input"
-                  type="file"
-                  accept="image/png,image/jpg,image/jpeg"
-                  multiple
-                  onChange={(event) => handleFilesChange(event, "live")}
-                />
-                <p className="helper-text">Supported File Type: .png, .jpg, .jpeg</p>
+                <label className="upload-control">
+                  <input
+                    className="upload-input"
+                    type="file"
+                    accept="image/png,image/jpg,image/jpeg"
+                    multiple
+                    onChange={(event) => handleFilesChange(event, "live")}
+                  />
+                  <span className="upload-control-text">
+                    Upload Live Cattle Photos <span className="required-star">*</span>
+                  </span>
+                  <span className="upload-control-icon" aria-hidden="true">
+                    🔗
+                  </span>
+                </label>
+                <p className="helper-text">Supported File Type: .png, .jpg</p>
 
                 <ul className="file-list">
                   {liveImages.map((file) => (
@@ -144,15 +151,22 @@ function CattleReidentification() {
               </div>
 
               <div className="field">
-                <label>Upload Dead Cattle Photos *</label>
-                <input
-                  className="upload-input"
-                  type="file"
-                  accept="image/png,image/jpg,image/jpeg"
-                  multiple
-                  onChange={(event) => handleFilesChange(event, "dead")}
-                />
-                <p className="helper-text">Supported File Type: .png, .jpg, .jpeg</p>
+                <label className="upload-control">
+                  <input
+                    className="upload-input"
+                    type="file"
+                    accept="image/png,image/jpg,image/jpeg"
+                    multiple
+                    onChange={(event) => handleFilesChange(event, "dead")}
+                  />
+                  <span className="upload-control-text">
+                    Upload Dead Cattle Photos <span className="required-star">*</span>
+                  </span>
+                  <span className="upload-control-icon" aria-hidden="true">
+                    🔗
+                  </span>
+                </label>
+                <p className="helper-text">Supported File Type: .png, .jpg</p>
 
                 <ul className="file-list">
                   {deadImages.map((file) => (
