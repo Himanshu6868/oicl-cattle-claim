@@ -228,7 +228,7 @@
   font-size: 12px;
   line-height: 100%;
   letter-spacing: 0%;
-	margin-top:10px;
+	margin-top: 48px
 }
 
 .file-saved-text {
@@ -236,7 +236,6 @@
   font-weight: 300;
   line-height: 26px;
   color: #3ad683 !important;
-	margin-top: 48px
 }
 
 .file-list {
