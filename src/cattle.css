@@ -185,14 +185,22 @@
 }
 
 .upload-control-icon {
-  width: 52px;
-  min-height: 58px;
-  background: #000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 21px;
+		align-items: center;
+		background-color: #000 !important;
+		border-radius: 0 6px 6px 0;
+		color: #fff !important;
+		cursor: pointer;
+		display: block !important;
+		display: flex !important;
+		font-size: 22px !important;
+		height: 100%;
+		justify-content: center;
+		position: absolute;
+		right: 0;
+		text-align: center;
+		top: 0;
+		width: 40px;
+
 }
 
 .upload-control .upload-input {
