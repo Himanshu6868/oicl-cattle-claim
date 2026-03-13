@@ -148,23 +148,31 @@
 
 
 .upload-control {
-  position: relative;
+  -webkit-appearance: none;
+  appearance: none;
+  background-clip: padding-box;
+  background-color: #fff;
+  border: 1px solid #adadad;
+  border-radius: var(--bs-border-radius, 0.375rem);
+  color: var(--bs-body-color, #212529);
   display: flex;
   align-items: center;
   width: 100%;
-  min-height: 50px;
-  border: 1px solid #d5dbe4;
-  border-radius: 6px;
-  background: #fff;
+  height: 58px !important;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  position: relative;
   overflow: hidden;
   cursor: pointer;
 }
 
 .upload-control-text {
   flex: 1;
-  font-size: 28px;
+  font-size: 2rem;
   color: #1f1f1f;
-  padding: 0 16px;
+  padding: 0.375rem 0.75rem;
   line-height: 1.2;
 }
 
@@ -174,7 +182,7 @@
 
 .upload-control-icon {
   width: 52px;
-  min-height: 50px;
+  min-height: 58px;
   background: #000;
   color: #fff;
   display: flex;
