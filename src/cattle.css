@@ -137,6 +137,10 @@
   cursor: pointer;
 }
 
+.secondary-nav-btn {
+  background: #1b65c9;
+}
+
 .cattle-image {
   width: 449px;
   height: 237px;
