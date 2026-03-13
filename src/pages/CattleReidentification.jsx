@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
+import { clearAuthToken, getAuthToken } from "../utils/auth";
 import "../cattle.css";
 
 const CLAIM_DETAILS_API_URL =
@@ -17,6 +18,52 @@ function CattleReidentification() {
   const [liveImages, setLiveImages] = useState([]);
   const [deadImages, setDeadImages] = useState([]);
   const [claimDetailsError, setClaimDetailsError] = useState("");
+
+  const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
+
+  const postEncryptedApiRequest = async (apiUrl, payload) => {
+    const token = getRequestToken();
+
+    if (!token) {
+      throw new Error("Authentication required. Please login again.");
+    }
+
+    const encryptedPayload = await encryptPayload(payload);
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "content-type": "application/json",
+        "x-language": "en",
+        "x-source": "WEB",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        payload: encryptedPayload,
+      }),
+    });
+
+    let responseBody = null;
+    try {
+      responseBody = await response.json();
+    } catch (_error) {
+      responseBody = null;
+    }
+
+    if (response.status === 401) {
+      clearAuthToken();
+      localStorage.removeItem("token");
+      navigate("/", { replace: true });
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!response.ok) {
+      throw new Error(responseBody?.message || "Failed to fetch claim details.");
+    }
+
+    return responseBody;
+  };
 
   const handleClaimDetailsNext = async () => {
     const newErrors = {};
@@ -34,37 +81,21 @@ function CattleReidentification() {
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const encryptedPayload = encryptPayload({
+        await postEncryptedApiRequest(CLAIM_DETAILS_API_URL, {
           claimNumber,
           policyNumber,
         });
 
-        const response = await fetch(CLAIM_DETAILS_API_URL, {
-          method: "POST",
-          headers: {
-            accept: "application/json, text/plain, */*",
-            "content-type": "application/json",
-            "x-language": "en",
-            "x-source": "WEB",
-          },
-          body: JSON.stringify({
-            payload: encryptedPayload,
-          }),
-        });
-
-        let responseBody = null;
-        try {
-          responseBody = await response.json();
-        } catch (_error) {
-          responseBody = null;
-        }
-
-        if (!response.ok) {
-          throw new Error(responseBody?.message || "Failed to fetch claim details.");
-        }
-
         setShowUploadSection(true);
       } catch (error) {
+        if (error instanceof Error && error.message === "Session expired. Please login again.") {
+          return;
+        }
+
+        if (error instanceof Error && error.message === "Authentication required. Please login again.") {
+          navigate("/", { replace: true });
+        }
+
         setClaimDetailsError(
           error instanceof Error
             ? error.message
