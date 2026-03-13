@@ -12,6 +12,8 @@ const UPLOAD_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
 const DELETE_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-doc";
+const FETCH_OCR_DATA_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
 function CattleReidentification() {
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ function CattleReidentification() {
   const [liveImages, setLiveImages] = useState([]);
   const [deadImages, setDeadImages] = useState([]);
   const [claimDetailsError, setClaimDetailsError] = useState("");
+  const [uploadValidationError, setUploadValidationError] = useState("");
+  const [isValidatingUploads, setIsValidatingUploads] = useState(false);
 
   const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
 
@@ -201,6 +205,82 @@ function CattleReidentification() {
 
   const openUploadedFile = (fileUrl) => {
     window.open(fileUrl, "_blank");
+  };
+
+  const fetchOcrData = async () => {
+    const token = getRequestToken();
+
+    if (!token) {
+      throw new Error("Authentication required. Please login again.");
+    }
+
+    const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(
+      claimNumber.trim(),
+    )}&policyNumber=${encodeURIComponent(policyNumber.trim())}`;
+
+    const response = await fetch(requestUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "x-language": "en",
+        "x-source": "WEB",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let responseBody = null;
+    try {
+      responseBody = await response.json();
+    } catch (_error) {
+      responseBody = null;
+    }
+
+    if (response.status === 401) {
+      clearAuthToken();
+      localStorage.removeItem("token");
+      navigate("/", { replace: true });
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!response.ok) {
+      throw new Error(responseBody?.message || "Failed to validate uploaded cattle photos.");
+    }
+
+    return responseBody;
+  };
+
+  const handleUploadDetailsNext = async () => {
+    setUploadValidationError("");
+
+    if (!liveImages.length || !deadImages.length) {
+      setUploadValidationError(
+        "Please upload at least one Live Cattle Photo and one Dead Cattle Photo to continue.",
+      );
+      return;
+    }
+
+    setIsValidatingUploads(true);
+
+    try {
+      await fetchOcrData();
+    } catch (error) {
+      if (error instanceof Error && error.message === "Session expired. Please login again.") {
+        return;
+      }
+
+      if (error instanceof Error && error.message === "Authentication required. Please login again.") {
+        navigate("/", { replace: true });
+        return;
+      }
+
+      setUploadValidationError(
+        error instanceof Error
+          ? error.message
+          : "Unexpected error occurred while validating uploaded cattle photos.",
+      );
+    } finally {
+      setIsValidatingUploads(false);
+    }
   };
 
   const deleteUploadedFile = async ({ type, file }) => {
@@ -455,7 +535,15 @@ function CattleReidentification() {
               </div>
             </div>
 
-            <button className="next-btn validate-btn">Validate</button>
+            <button
+              className="next-btn validate-btn"
+              type="button"
+              onClick={handleUploadDetailsNext}
+              disabled={isValidatingUploads}
+            >
+              {isValidatingUploads ? "Validating..." : "Validate"}
+            </button>
+            {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
           </div>
         ) : null}
       </div>
