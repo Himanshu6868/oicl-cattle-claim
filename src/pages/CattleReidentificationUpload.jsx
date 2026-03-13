@@ -4,6 +4,8 @@ import Navbar from "../components/Navbar";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
 import "../cattle.css";
+import downloadIcon from "../assets/download.png";
+import deleteIcon from "../assets/bin.png";
 
 const UPLOAD_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
@@ -399,7 +401,8 @@ function CattleReidentificationUpload() {
 
                     <div className="file-actions">
                       <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
-                        ⬇
+
+                        <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
                       </button>
 
                       <button
@@ -407,7 +410,7 @@ function CattleReidentificationUpload() {
                         type="button"
                         onClick={() => deleteUploadedFile({ type: "live", file })}
                       >
-                        🗑
+                        <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
                       </button>
                     </div>
                   </li>
@@ -440,7 +443,7 @@ function CattleReidentificationUpload() {
 
                     <div className="file-actions">
                       <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
-                        ⬇
+                        <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
                       </button>
 
                       <button
@@ -448,7 +451,7 @@ function CattleReidentificationUpload() {
                         type="button"
                         onClick={() => deleteUploadedFile({ type: "dead", file })}
                       >
-                        🗑
+                        <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
                       </button>
                     </div>
                   </li>
