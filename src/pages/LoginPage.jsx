@@ -21,7 +21,7 @@ function LoginPage() {
     setErrorMessage("");
 
     try {
-      const { token } = await loginWithUsernamePassword({ username, password });
+      const { token } = await loginWithUsernamePassword();
 
       if (!token) {
         throw new Error("Token missing in login response.");

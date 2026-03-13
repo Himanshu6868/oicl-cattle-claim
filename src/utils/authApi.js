@@ -17,8 +17,13 @@ const getTokenFromResponse = (responseBody) => {
   );
 };
 
-export const loginWithUsernamePassword = async ({ username, password }) => {
-  const payload = await encryptPayload({ userName: username, password });
+const DEFAULT_LOGIN_PAYLOAD = {
+  userName: "jhhjhjh.sdasdsd@DGLIGER.COM",
+  password: "Oicl988912345",
+};
+
+export const loginWithUsernamePassword = async () => {
+  const payload = await encryptPayload(DEFAULT_LOGIN_PAYLOAD);
 
   const response = await fetch(LOGIN_API_URL, {
     method: "POST",

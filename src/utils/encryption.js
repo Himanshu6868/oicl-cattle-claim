@@ -27,7 +27,7 @@ const getCryptoKey = async () => {
   );
 };
 
-export const encryptPayload = async (payload) => {
+const encryptWithWebCrypto = async (payload) => {
   const key = await getCryptoKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const plainText = encoder.encode(JSON.stringify(payload));
@@ -38,4 +38,18 @@ export const encryptPayload = async (payload) => {
   );
 
   return `${toBase64(iv)}:${toBase64(new Uint8Array(encryptedBuffer))}`;
+};
+
+export const encryptPayload = async (payload) => {
+  if (!ENCRYPTION_KEY) {
+    throw new Error("Missing VITE_LOGIN_ENCRYPTION_KEY for login payload encryption.");
+  }
+
+  try {
+    const importCryptoJs = new Function("moduleName", "return import(moduleName);");
+    const CryptoJS = await importCryptoJs("crypto-js");
+    return CryptoJS.default.AES.encrypt(JSON.stringify(payload), ENCRYPTION_KEY).toString();
+  } catch (_error) {
+    return encryptWithWebCrypto(payload);
+  }
 };
