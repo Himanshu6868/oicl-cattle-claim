@@ -208,12 +208,40 @@
 
 .file-list {
   margin: 12px 0 0;
-  padding-left: 18px;
-  color: #2f9e44;
+  padding: 0;
+  list-style: none;
 }
 
-.file-list li {
-  margin-bottom: 6px;
+.uploaded-file-row {
+  width: 591.95px;
+  height: 58px;
+  border-radius: 6px;
+  border: 2px solid var(--bs-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+.uploaded-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.file-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 .validate-btn {

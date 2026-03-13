@@ -10,6 +10,8 @@ const CLAIM_DETAILS_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/save-basic-details";
 const UPLOAD_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
+const DELETE_DOCUMENT_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-docs";
 
 function CattleReidentification() {
   const navigate = useNavigate();
@@ -144,6 +146,33 @@ function CattleReidentification() {
     }
   };
 
+  const openUploadedFile = (fileUrl) => {
+    window.open(fileUrl, "_blank");
+  };
+
+  const deleteUploadedFile = async ({ type, file }) => {
+    try {
+      await postEncryptedApiRequest(DELETE_DOCUMENT_API_URL, {
+        claimNumber,
+        fileName: file.fileName,
+        documentType: type === "live" ? "ALIVE" : "DEAD",
+      });
+
+      if (type === "live") {
+        setLiveImages((previousFiles) =>
+          previousFiles.filter((uploadedFile) => uploadedFile.id !== file.id),
+        );
+        return;
+      }
+
+      setDeadImages((previousFiles) =>
+        previousFiles.filter((uploadedFile) => uploadedFile.id !== file.id),
+      );
+    } catch (error) {
+      console.error("Failed to delete file:", file.fileName, error);
+    }
+  };
+
   const handleFilesChange = async (event, type) => {
     const files = Array.from(event.target.files || []);
     const documentType = type === "live" ? "ALIVE" : "DEAD";
@@ -173,7 +202,12 @@ function CattleReidentification() {
         }
 
         await uploadFileToS3(uploadUrl, file);
-        uploadedFiles.push(file);
+        uploadedFiles.push({
+          id: `${file.name}-${file.lastModified}`,
+          fileName: file.name,
+          url: uploadUrl,
+          rawFile: file,
+        });
       } catch (error) {
         console.error("Failed to upload file:", file.name, error);
       }
@@ -291,7 +325,27 @@ function CattleReidentification() {
 
                 <ul className="file-list">
                   {liveImages.map((file) => (
-                    <li key={file.name}>{file.name}</li>
+                    <li className="uploaded-file-row" key={file.id}>
+                      <span className="uploaded-file-name">{file.fileName}</span>
+
+                      <div className="file-actions">
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => openUploadedFile(file.url)}
+                        >
+                          ⬇
+                        </button>
+
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => deleteUploadedFile({ type: "live", file })}
+                        >
+                          🗑
+                        </button>
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -316,7 +370,27 @@ function CattleReidentification() {
 
                 <ul className="file-list">
                   {deadImages.map((file) => (
-                    <li key={file.name}>{file.name}</li>
+                    <li className="uploaded-file-row" key={file.id}>
+                      <span className="uploaded-file-name">{file.fileName}</span>
+
+                      <div className="file-actions">
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => openUploadedFile(file.url)}
+                        >
+                          ⬇
+                        </button>
+
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => deleteUploadedFile({ type: "dead", file })}
+                        >
+                          🗑
+                        </button>
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </div>
