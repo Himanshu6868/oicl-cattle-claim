@@ -8,6 +8,8 @@ import "../cattle.css";
 
 const CLAIM_DETAILS_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/save-basic-details";
+const UPLOAD_DOCUMENT_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
 
 function CattleReidentification() {
   const navigate = useNavigate();
@@ -105,15 +107,84 @@ function CattleReidentification() {
     }
   };
 
-  const handleFilesChange = (event, type) => {
-    const files = Array.from(event.target.files || []);
+  const getFileExtension = (fileName) => {
+    const extension = fileName.split(".").pop();
+    return extension ? extension.toLowerCase() : "";
+  };
 
-    if (type === "live") {
-      setLiveImages(files);
+  const getUploadUrl = async ({ fileName, mediaType, documentType }) => {
+    const responseBody = await postEncryptedApiRequest(UPLOAD_DOCUMENT_API_URL, {
+      fileName,
+      mediaType,
+      documentType,
+      claimNumber,
+    });
+
+    return (
+      responseBody?.uploadUrl ||
+      responseBody?.data?.uploadUrl ||
+      responseBody?.data?.url ||
+      responseBody?.url ||
+      responseBody?.data ||
+      null
+    );
+  };
+
+  const uploadFileToS3 = async (uploadUrl, file) => {
+    const uploadResponse = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+      },
+      body: file,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`S3 upload failed with status ${uploadResponse.status}.`);
+    }
+  };
+
+  const handleFilesChange = async (event, type) => {
+    const files = Array.from(event.target.files || []);
+    const documentType = type === "live" ? "ALIVE" : "DEAD";
+
+    if (!files.length) {
+      if (type === "live") {
+        setLiveImages([]);
+        return;
+      }
+
+      setDeadImages([]);
       return;
     }
 
-    setDeadImages(files);
+    const uploadedFiles = [];
+
+    for (const file of files) {
+      try {
+        const uploadUrl = await getUploadUrl({
+          fileName: file.name,
+          mediaType: getFileExtension(file.name),
+          documentType,
+        });
+
+        if (!uploadUrl || typeof uploadUrl !== "string") {
+          throw new Error("Upload URL missing in upload-docs response.");
+        }
+
+        await uploadFileToS3(uploadUrl, file);
+        uploadedFiles.push(file);
+      } catch (error) {
+        console.error("Failed to upload file:", file.name, error);
+      }
+    }
+
+    if (type === "live") {
+      setLiveImages(uploadedFiles);
+      return;
+    }
+
+    setDeadImages(uploadedFiles);
   };
 
   return (
