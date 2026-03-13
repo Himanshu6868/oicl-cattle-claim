@@ -11,7 +11,7 @@ const CLAIM_DETAILS_API_URL =
 const UPLOAD_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
 const DELETE_DOCUMENT_API_URL =
-  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-docs";
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-doc";
 
 function CattleReidentification() {
   const navigate = useNavigate();
@@ -114,7 +114,7 @@ function CattleReidentification() {
     return extension ? extension.toLowerCase() : "";
   };
 
-  const getUploadUrl = async ({ fileName, mediaType, documentType }) => {
+  const getUploadDetails = async ({ fileName, mediaType, documentType }) => {
     const responseBody = await postEncryptedApiRequest(UPLOAD_DOCUMENT_API_URL, {
       fileName,
       mediaType,
@@ -122,14 +122,67 @@ function CattleReidentification() {
       claimNumber,
     });
 
-    return (
+    const responseData = responseBody?.data ?? responseBody;
+    const uploadUrl =
+      responseData?.uploadUrl ||
+      responseData?.url ||
       responseBody?.uploadUrl ||
-      responseBody?.data?.uploadUrl ||
-      responseBody?.data?.url ||
       responseBody?.url ||
-      responseBody?.data ||
-      null
-    );
+      null;
+    const documentId =
+      responseData?.id ||
+      responseData?.docId ||
+      responseData?.documentId ||
+      responseBody?.id ||
+      responseBody?.docId ||
+      responseBody?.documentId ||
+      null;
+
+    return { uploadUrl, documentId };
+  };
+
+  const deleteDocumentRequest = async ({ documentId, documentType }) => {
+    const token = getRequestToken();
+
+    if (!token) {
+      throw new Error("Authentication required. Please login again.");
+    }
+
+    const deleteUrl = `${DELETE_DOCUMENT_API_URL}/${encodeURIComponent(
+      documentId,
+    )}?claimNumber=${encodeURIComponent(claimNumber.trim())}`;
+
+    const response = await fetch(deleteUrl, {
+      method: "DELETE",
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "content-type": "application/json",
+        "x-language": "en",
+        "x-source": "WEB",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        payload: await encryptPayload({ documentType }),
+      }),
+    });
+
+    let responseBody = null;
+    try {
+      responseBody = await response.json();
+    } catch (_error) {
+      responseBody = null;
+    }
+
+    if (response.status === 401) {
+      clearAuthToken();
+      localStorage.removeItem("token");
+      navigate("/", { replace: true });
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!response.ok) {
+      throw new Error(responseBody?.message || "Failed to delete file.");
+    }
   };
 
   const uploadFileToS3 = async (uploadUrl, file) => {
@@ -152,9 +205,8 @@ function CattleReidentification() {
 
   const deleteUploadedFile = async ({ type, file }) => {
     try {
-      await postEncryptedApiRequest(DELETE_DOCUMENT_API_URL, {
-        claimNumber,
-        fileName: file.fileName,
+      await deleteDocumentRequest({
+        documentId: file.documentId || file.id,
         documentType: type === "live" ? "ALIVE" : "DEAD",
       });
 
@@ -191,7 +243,7 @@ function CattleReidentification() {
 
     for (const file of files) {
       try {
-        const uploadUrl = await getUploadUrl({
+        const { uploadUrl, documentId } = await getUploadDetails({
           fileName: file.name,
           mediaType: getFileExtension(file.name),
           documentType,
@@ -203,7 +255,8 @@ function CattleReidentification() {
 
         await uploadFileToS3(uploadUrl, file);
         uploadedFiles.push({
-          id: `${file.name}-${file.lastModified}`,
+          id: documentId || `${file.name}-${file.lastModified}`,
+          documentId,
           fileName: file.name,
           url: uploadUrl,
           rawFile: file,
