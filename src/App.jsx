@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import CattleReidentification from "./pages/CattleReidentification";
+import CattleReidentificationResults from "./pages/CattleReidentificationResults";
 import { isAuthenticated } from "./utils/auth";
 
 function ProtectedRoute({ children }) {
@@ -45,6 +46,14 @@ function App() {
           element={(
             <ProtectedRoute>
               <CattleReidentification />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/cattle-reidentification-results"
+          element={(
+            <ProtectedRoute>
+              <CattleReidentificationResults />
             </ProtectedRoute>
           )}
         />

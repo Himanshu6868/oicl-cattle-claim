@@ -263,6 +263,7 @@ function CattleReidentification() {
 
     try {
       await fetchOcrData();
+      navigate("/cattle-reidentification-results");
     } catch (error) {
       if (error instanceof Error && error.message === "Session expired. Please login again.") {
         return;
