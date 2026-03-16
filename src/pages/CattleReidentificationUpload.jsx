@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import StepProgressBar from "../components/StepProgressBar";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { trackApiRequest } from "../utils/apiLoader";
 import "../cattle.css";
 import downloadIcon from "../assets/download.png";
 import deleteIcon from "../assets/bin.png";
@@ -46,7 +47,7 @@ function CattleReidentificationUpload() {
 
     const encryptedPayload = await encryptPayload(payload);
 
-    const response = await fetch(apiUrl, {
+    const response = await trackApiRequest(fetch(apiUrl, {
       method: "POST",
       headers: {
         accept: "application/json, text/plain, */*",
@@ -58,7 +59,7 @@ function CattleReidentificationUpload() {
       body: JSON.stringify({
         payload: encryptedPayload,
       }),
-    });
+    }));
 
     let responseBody = null;
     try {
@@ -124,7 +125,7 @@ function CattleReidentificationUpload() {
       documentId,
     )}?claimNumber=${encodeURIComponent(claimNumber)}`;
 
-    const response = await fetch(deleteUrl, {
+    const response = await trackApiRequest(fetch(deleteUrl, {
       method: "DELETE",
       headers: {
         accept: "application/json, text/plain, */*",
@@ -136,7 +137,7 @@ function CattleReidentificationUpload() {
       body: JSON.stringify({
         payload: await encryptPayload({ documentType }),
       }),
-    });
+    }));
 
     let responseBody = null;
     try {
@@ -158,13 +159,13 @@ function CattleReidentificationUpload() {
   };
 
   const uploadFileToS3 = async (uploadUrl, file) => {
-    const uploadResponse = await fetch(uploadUrl, {
+    const uploadResponse = await trackApiRequest(fetch(uploadUrl, {
       method: "PUT",
       headers: {
         "Content-Type": file.type || "application/octet-stream",
       },
       body: file,
-    });
+    }));
 
     if (!uploadResponse.ok) {
       throw new Error(`S3 upload failed with status ${uploadResponse.status}.`);
@@ -186,7 +187,7 @@ function CattleReidentificationUpload() {
       claimNumber,
     )}&policyNumber=${encodeURIComponent(policyNumber)}`;
 
-    const response = await fetch(requestUrl, {
+    const response = await trackApiRequest(fetch(requestUrl, {
       method: "GET",
       headers: {
         accept: "application/json, text/plain, */*",
@@ -194,7 +195,7 @@ function CattleReidentificationUpload() {
         "x-source": "WEB",
         Authorization: `Bearer ${token}`,
       },
-    });
+    }));
 
     let responseBody = null;
     try {
