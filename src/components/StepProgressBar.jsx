@@ -1,18 +1,14 @@
 const STEP_ITEMS = ["Claimant Details", "Upload Documents", "Image Similarity Results"];
 
 function StepProgressBar({ currentStep }) {
-  const totalSteps = STEP_ITEMS.length;
-  const safeStep = Math.min(Math.max(currentStep, 1), totalSteps);
-
   const getStepClass = (step) => {
-    if (step < safeStep) return "completed";
-    if (step === safeStep) return "active";
+    if (step < currentStep) return "completed";
+    if (step === currentStep) return "active";
     return "";
   };
 
-const progressWidth =
-  ((currentStep - 1) / (STEP_ITEMS.length - 1)) * 66.666;
-  
+  const progressWidth = ((currentStep - 1) / (STEP_ITEMS.length - 1)) * 100;
+
   return (
     <div className="stepper-container" aria-label="Cattle reidentification progress">
       <div className="progress-line" aria-hidden="true"></div>
@@ -28,9 +24,9 @@ const progressWidth =
 
         return (
           <div className="step" key={stepLabel}>
-              <div
+            <div
               className={`circle ${stepClass}`.trim()}
-              aria-current={safeStep === stepNumber ? "step" : undefined}
+              aria-current={currentStep === stepNumber ? "step" : undefined}
             >
               {stepClass === "completed" ? "✓" : stepNumber}
             </div>
