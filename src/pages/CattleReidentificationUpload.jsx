@@ -341,7 +341,7 @@ function CattleReidentificationUpload() {
           <h1 className="cattle-title">Cattle Reidentification</h1>
         </div>
 
-        <div className="claim-box">
+        <div className="claim-box" style={{marginTop:"15px"}}>
           <div className="claim-header">Claimant Details</div>
 
           <div className="form-row">
