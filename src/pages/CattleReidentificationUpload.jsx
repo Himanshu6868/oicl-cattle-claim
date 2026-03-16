@@ -231,7 +231,13 @@ function CattleReidentificationUpload() {
     setIsValidatingUploads(true);
 
     setCurrentStep(3);
-    navigate("/cattle-reidentification-results", { state: { currentStep: 3 } });
+    navigate("/cattle-reidentification-results", {
+      state: {
+        currentStep: 3,
+        claimNumber,
+        policyNumber,
+      },
+    });
     try {
       await fetchOcrData();
     } catch (error) {
