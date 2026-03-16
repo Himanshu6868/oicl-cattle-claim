@@ -6,6 +6,7 @@ import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
+import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
 
 const CLAIM_DETAILS_API_URL =
@@ -18,7 +19,7 @@ function CattleReidentification() {
   const [policyNumber, setPolicyNumber] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
-  const [claimDetailsError, setClaimDetailsError] = useState("");
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (state?.claimNumber) {
@@ -90,8 +91,6 @@ function CattleReidentification() {
     }
 
     setErrors(newErrors);
-    setClaimDetailsError("");
-
     if (Object.keys(newErrors).length === 0) {
       try {
         await postEncryptedApiRequest(CLAIM_DETAILS_API_URL, {
@@ -116,11 +115,10 @@ function CattleReidentification() {
           navigate("/", { replace: true });
         }
 
-        setClaimDetailsError(
-          error instanceof Error
-            ? error.message
-            : "Unexpected error occurred while fetching claim details.",
-        );
+        const errorMessage = error instanceof Error
+          ? error.message
+          : "Unexpected error occurred while fetching claim details.";
+        showToast(errorMessage);
       }
     }
   };
@@ -182,7 +180,6 @@ function CattleReidentification() {
             <button className="next-btn" onClick={handleClaimDetailsNext}>
               Next
             </button>
-            {claimDetailsError ? <p className="field-error">{claimDetailsError}</p> : null}
           </div>
 
           <img

@@ -6,6 +6,7 @@ import CattleReidentificationUpload from "./pages/CattleReidentificationUpload";
 import CattleReidentificationResults from "./pages/CattleReidentificationResults";
 import { isAuthenticated } from "./utils/auth";
 import ApiLoaderOverlay from "./components/ApiLoaderOverlay";
+import { ToastProvider } from "./components/ToastProvider";
 
 function ProtectedRoute({ children }) {
   if (!isAuthenticated()) {
@@ -26,50 +27,52 @@ function PublicOnlyRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
-      <ApiLoaderOverlay />
-      <Routes>
-        <Route
-          path="/"
-          element={(
-            <PublicOnlyRoute>
-              <LoginPage />
-            </PublicOnlyRoute>
-          )}
-        />
-        <Route
-          path="/dashboard"
-          element={(
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          )}
-        />
-        <Route
-          path="/cattle-reidentification"
-          element={(
-            <ProtectedRoute>
-              <CattleReidentification />
-            </ProtectedRoute>
-          )}
-        />
-        <Route
-          path="/cattle-reidentification/upload"
-          element={(
-            <ProtectedRoute>
-              <CattleReidentificationUpload />
-            </ProtectedRoute>
-          )}
-        />
-        <Route
-          path="/cattle-reidentification-results"
-          element={(
-            <ProtectedRoute>
-              <CattleReidentificationResults />
-            </ProtectedRoute>
-          )}
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <ToastProvider>
+        <ApiLoaderOverlay />
+        <Routes>
+          <Route
+            path="/"
+            element={(
+              <PublicOnlyRoute>
+                <LoginPage />
+              </PublicOnlyRoute>
+            )}
+          />
+          <Route
+            path="/dashboard"
+            element={(
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/cattle-reidentification"
+            element={(
+              <ProtectedRoute>
+                <CattleReidentification />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/cattle-reidentification/upload"
+            element={(
+              <ProtectedRoute>
+                <CattleReidentificationUpload />
+              </ProtectedRoute>
+            )}
+          />
+          <Route
+            path="/cattle-reidentification-results"
+            element={(
+              <ProtectedRoute>
+                <CattleReidentificationResults />
+              </ProtectedRoute>
+            )}
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
