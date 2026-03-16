@@ -1,54 +1,137 @@
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import StepProgressBar from "../components/StepProgressBar";
+import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { trackApiRequest } from "../utils/apiLoader";
 import "../cattle.css";
 
-const similarityData = {
-  aliveImages: ["Image 1", "Image 2", "Image 3"],
-  deadImages: ["Image 1", "Image 2", "Image 3", "Image 4"],
-  rows: [
-    {
-      alive: "Image 1",
-      values: [80, 68, 50, 10],
-      average: 52,
-    },
-    {
-      alive: "Image 2",
-      values: [50, 10, 60, 5],
-      average: 31.2,
-    },
-    {
-      alive: "Image 3",
-      values: [40, 25, 35, 20],
-      average: 30,
-    },
-  ],
-  overallScore: 37.7,
-};
+const FETCH_OCR_DATA_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
-const rejectedImages = [
-  {
-    name: "Cattle image live 1.png",
-    type: "live",
-  },
-  {
-    name: "Cattle image live 2.png",
-    type: "live",
-  },
-  {
-    name: "Cattle image dead 1.png",
-    type: "dead",
-  },
-  {
-    name: "Cattle image dead 2.png",
-    type: "dead",
-  },
-];
+const formatSimilarity = (value) => {
+  if (typeof value !== "number") {
+    return "0.00";
+  }
+
+  return (value * 100).toFixed(2);
+};
 
 function CattleReidentificationResults() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const currentStep = state?.currentStep || 3;
+  const claimNumber = state?.claimNumber?.trim() || "";
+  const [ocrData, setOcrData] = useState(null);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
+  const [resultsError, setResultsError] = useState("");
+
+  const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchOcrData = async () => {
+      if (!claimNumber) {
+        setResultsError("Claim number is missing. Please go back and try again.");
+        return;
+      }
+
+      const token = getRequestToken();
+
+      if (!token) {
+        setResultsError("Authentication required. Please login again.");
+        navigate("/", { replace: true });
+        return;
+      }
+
+      setIsLoadingResults(true);
+      setResultsError("");
+
+      const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(claimNumber)}`;
+
+      try {
+        const response = await trackApiRequest(fetch(requestUrl, {
+          method: "GET",
+          headers: {
+            accept: "application/json, text/plain, */*",
+            "x-language": "en",
+            "x-source": "WEB",
+            Authorization: `Bearer ${token}`,
+          },
+        }));
+
+        let responseBody = null;
+        try {
+          responseBody = await response.json();
+        } catch (_error) {
+          responseBody = null;
+        }
+
+        if (response.status === 401) {
+          clearAuthToken();
+          localStorage.removeItem("token");
+          navigate("/", { replace: true });
+          throw new Error("Session expired. Please login again.");
+        }
+
+        if (!response.ok) {
+          throw new Error(responseBody?.message || "Failed to fetch cattle reidentification results.");
+        }
+
+        setOcrData(responseBody);
+      } catch (error) {
+        setResultsError(
+          error instanceof Error
+            ? error.message
+            : "Unexpected error occurred while fetching cattle reidentification results.",
+        );
+      } finally {
+        setIsLoadingResults(false);
+      }
+    };
+
+    fetchOcrData();
+  }, [claimNumber, navigate]);
+
+  const similarityData = useMemo(() => {
+    const analysisRows = ocrData?.verificationAnalysisDetails || [];
+    const deadImages = analysisRows[0]?.resultDetails?.map((detail) => detail.deadImage) || [];
+    const rows = analysisRows.map((analysisDetail, index) => {
+      const values = (analysisDetail.resultDetails || []).map((resultDetail) =>
+        formatSimilarity(resultDetail.similarity),
+      );
+
+      const averageValue = values.length
+        ? (values.reduce((sum, value) => sum + Number(value), 0) / values.length).toFixed(2)
+        : "0.00";
+
+      return {
+        alive: analysisDetail.liveImage || `Live Image ${index + 1}`,
+        values,
+        average: averageValue,
+      };
+    });
+
+    return {
+      deadImages,
+      rows,
+      overallScore: formatSimilarity(ocrData?.avgSimilarity),
+    };
+  }, [ocrData]);
+
+  const rejectedImages = useMemo(() => {
+    const failedAliveImages = (ocrData?.faileAliveImagesDetails || []).map((imageDetail) => ({
+      name: imageDetail.file,
+      type: "live",
+    }));
+
+    const failedDeadImages = (ocrData?.failedDeadImagesDetails || []).map((imageDetail) => ({
+      name: imageDetail.file,
+      type: "dead",
+    }));
+
+    return [...failedAliveImages, ...failedDeadImages];
+  }, [ocrData]);
+
   const leftColumn = rejectedImages.filter((_, index) => index % 2 === 0);
   const rightColumn = rejectedImages.filter((_, index) => index % 2 !== 0);
 
@@ -80,6 +163,8 @@ function CattleReidentificationResults() {
 
       <section className="similarity-container">
         <div className="claim-header">Image Similarity Results</div>
+        {isLoadingResults ? <p className="upload-helper-text">Loading similarity results...</p> : null}
+        {resultsError ? <p className="field-error">{resultsError}</p> : null}
         <div className="similarity-table-wrapper">
           <table className="similarity-table">
             <thead>
@@ -89,8 +174,8 @@ function CattleReidentificationResults() {
                 <th rowSpan={2}>Average Similarity Score</th>
               </tr>
               <tr>
-                {similarityData.deadImages.map((imageName) => (
-                  <th key={imageName}>{`Dead ${imageName}`}</th>
+                {similarityData.deadImages.map((imageName, index) => (
+                  <th key={imageName}>{`Dead ${index + 1}`}</th>
                 ))}
               </tr>
             </thead>
