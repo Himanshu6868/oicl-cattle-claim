@@ -26,6 +26,8 @@ function CattleReidentificationUpload() {
   const [deadImages, setDeadImages] = useState([]);
   const [uploadValidationError, setUploadValidationError] = useState("");
   const [isValidatingUploads, setIsValidatingUploads] = useState(false);
+  const [isClaimantDetailsOpen, setIsClaimantDetailsOpen] = useState(true);
+  const [isUploadPhotosOpen, setIsUploadPhotosOpen] = useState(true);
 
   useEffect(() => {
     if (!claimNumber || !policyNumber) {
@@ -341,38 +343,62 @@ function CattleReidentificationUpload() {
           <h1 className="cattle-title">Cattle Reidentification</h1>
         </div>
 
-        <div className="claim-box" style={{marginTop:"15px"}}>
-          <div className="claim-header">Claimant Details</div>
-
-          <div className="form-row">
-            <div className="field">
-              <label>Claim Number *</label>
-              <input value={claimNumber} placeholder="Enter claim number" disabled />
-            </div>
-
-            <div className="field">
-              <label>Policy Number *</label>
-              <input value={policyNumber} placeholder="Enter policy number" disabled />
-            </div>
-          </div>
-
+        <div className="claim-box" style={{ marginTop: "15px" }}>
           <button
-            className="next-btn secondary-nav-btn"
+            className="claim-header accordion-toggle"
             type="button"
-            onClick={() =>
-              navigate("/cattle-reidentification", {
-                state: { claimNumber, policyNumber, currentStep: 1 },
-              })
-            }
+            onClick={() => setIsClaimantDetailsOpen((previous) => !previous)}
+            aria-expanded={isClaimantDetailsOpen}
+            aria-controls="claimant-details-panel"
           >
-            Back to Claimant Details
+            <span>Claimant Details</span>
+            <span className="accordion-icon" aria-hidden="true">{isClaimantDetailsOpen ? "−" : "+"}</span>
           </button>
+
+          {isClaimantDetailsOpen ? (
+            <div id="claimant-details-panel">
+              <div className="form-row">
+                <div className="field">
+                  <label>Claim Number *</label>
+                  <input value={claimNumber} placeholder="Enter claim number" disabled />
+                </div>
+
+                <div className="field">
+                  <label>Policy Number *</label>
+                  <input value={policyNumber} placeholder="Enter policy number" disabled />
+                </div>
+              </div>
+
+              <button
+                className="next-btn secondary-nav-btn"
+                type="button"
+                onClick={() =>
+                  navigate("/cattle-reidentification", {
+                    state: { claimNumber, policyNumber, currentStep: 1 },
+                  })
+                }
+              >
+                Back to Claimant Details
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <div className="upload-box">
-          <div className="claim-header">Upload Cattle Photos</div>
+          <button
+            className="claim-header accordion-toggle"
+            type="button"
+            onClick={() => setIsUploadPhotosOpen((previous) => !previous)}
+            aria-expanded={isUploadPhotosOpen}
+            aria-controls="upload-photos-panel"
+          >
+            <span>Upload Cattle Photos</span>
+            <span className="accordion-icon" aria-hidden="true">{isUploadPhotosOpen ? "−" : "+"}</span>
+          </button>
 
-          <div className="form-row upload-form-row">
+          {isUploadPhotosOpen ? (
+            <div id="upload-photos-panel">
+              <div className="form-row upload-form-row">
             <div className="field upload-field">
               <label className="upload-control">
                 <input
@@ -457,15 +483,17 @@ function CattleReidentificationUpload() {
             </div>
           </div>
 
-          <button
-            className="next-btn validate-btn"
-            type="button"
-            onClick={handleUploadDetailsNext}
-            disabled={isValidatingUploads}
-          >
-            {isValidatingUploads ? "Validating..." : "Validate"}
-          </button>
-          {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
+              <button
+                className="next-btn validate-btn"
+                type="button"
+                onClick={handleUploadDetailsNext}
+                disabled={isValidatingUploads}
+              >
+                {isValidatingUploads ? "Validating..." : "Validate"}
+              </button>
+              {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
