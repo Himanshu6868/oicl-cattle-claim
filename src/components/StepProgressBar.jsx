@@ -10,8 +10,9 @@ function StepProgressBar({ currentStep }) {
     return "";
   };
 
-  const progressWidth = ((safeStep - 1) / (totalSteps - 1)) * 100;
-
+const progressWidth =
+  ((currentStep - 1) / (STEP_ITEMS.length - 1)) * 66.666;
+  
   return (
     <div className="stepper-container" aria-label="Cattle reidentification progress">
       <div className="progress-line" aria-hidden="true"></div>
