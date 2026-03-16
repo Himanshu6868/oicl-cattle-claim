@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import cattleIllustration from "../assets/cattle-illustration.png";
+import StepProgressBar from "../components/StepProgressBar";
 import "../cattle.css";
 
 const similarityData = {
@@ -46,6 +47,8 @@ const rejectedImages = [
 
 function CattleReidentificationResults() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const currentStep = state?.currentStep || 3;
   const leftColumn = rejectedImages.filter((_, index) => index % 2 === 0);
   const rightColumn = rejectedImages.filter((_, index) => index % 2 !== 0);
 
@@ -66,6 +69,10 @@ function CattleReidentificationResults() {
 
   return (
     <div className="cattle-page">
+      <div className="progress-wrapper">
+        <StepProgressBar currentStep={currentStep} />
+      </div>
+
       <div className="title-row results-title-row">
         <button className="back-btn" onClick={() => navigate("/cattle-reidentification")}>←</button>
         <h1 className="cattle-title">Cattle Reidentification</h1>

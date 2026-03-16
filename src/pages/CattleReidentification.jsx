@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import StepProgressBar from "../components/StepProgressBar";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
@@ -14,6 +15,7 @@ function CattleReidentification() {
   const { state } = useLocation();
   const [claimNumber, setClaimNumber] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [claimDetailsError, setClaimDetailsError] = useState("");
 
@@ -25,6 +27,8 @@ function CattleReidentification() {
     if (state?.policyNumber) {
       setPolicyNumber(state.policyNumber);
     }
+
+    setCurrentStep(state?.currentStep || 1);
   }, [state]);
 
   const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
@@ -94,10 +98,12 @@ function CattleReidentification() {
           policyNumber,
         });
 
+        setCurrentStep(2);
         navigate("/cattle-reidentification/upload", {
           state: {
             claimNumber: claimNumber.trim(),
             policyNumber: policyNumber.trim(),
+            currentStep: 2,
           },
         });
       } catch (error) {
@@ -128,17 +134,7 @@ function CattleReidentification() {
         </div>
 
         <div className="progress-wrapper">
-          <div className="step active">
-            <div className="circle">1</div>
-            <div className="step-text">Upload Documents</div>
-          </div>
-
-          <div className="line"></div>
-
-          <div className="step">
-            <div className="circle grey">2</div>
-            <div className="step-text">Validate</div>
-          </div>
+          <StepProgressBar currentStep={currentStep} />
         </div>
 
         <div className="title-row">

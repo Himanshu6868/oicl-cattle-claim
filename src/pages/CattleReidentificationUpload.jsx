@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import StepProgressBar from "../components/StepProgressBar";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
 import "../cattle.css";
@@ -20,6 +21,7 @@ function CattleReidentificationUpload() {
   const claimNumber = useMemo(() => state?.claimNumber?.trim() || "", [state?.claimNumber]);
   const policyNumber = useMemo(() => state?.policyNumber?.trim() || "", [state?.policyNumber]);
 
+  const [currentStep, setCurrentStep] = useState(state?.currentStep || 2);
   const [liveImages, setLiveImages] = useState([]);
   const [deadImages, setDeadImages] = useState([]);
   const [uploadValidationError, setUploadValidationError] = useState("");
@@ -225,7 +227,8 @@ function CattleReidentificationUpload() {
 
     setIsValidatingUploads(true);
 
-    navigate("/cattle-reidentification-results");
+    setCurrentStep(3);
+    navigate("/cattle-reidentification-results", { state: { currentStep: 3 } });
     try {
       await fetchOcrData();
     } catch (error) {
@@ -327,17 +330,7 @@ function CattleReidentificationUpload() {
         <div className="breadcrumb">Home &gt; Digital Products & Services &gt; Cattle Reidentification</div>
 
         <div className="progress-wrapper">
-          <div className="step">
-            <div className="circle">1</div>
-            <div className="step-text">Upload Documents</div>
-          </div>
-
-          <div className="line"></div>
-
-          <div className="step active">
-            <div className="circle">2</div>
-            <div className="step-text">Validate</div>
-          </div>
+          <StepProgressBar currentStep={currentStep} />
         </div>
 
         <div className="title-row">
@@ -366,7 +359,11 @@ function CattleReidentificationUpload() {
           <button
             className="next-btn secondary-nav-btn"
             type="button"
-            onClick={() => navigate("/cattle-reidentification", { state: { claimNumber, policyNumber } })}
+            onClick={() =>
+              navigate("/cattle-reidentification", {
+                state: { claimNumber, policyNumber, currentStep: 1 },
+              })
+            }
           >
             Back to Claimant Details
           </button>
