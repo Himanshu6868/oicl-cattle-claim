@@ -501,7 +501,6 @@ function CattleReidentificationUpload() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
