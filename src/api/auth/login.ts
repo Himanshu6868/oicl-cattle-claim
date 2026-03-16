@@ -1,4 +1,5 @@
 import { encryptPayload } from "../../utils/encryption";
+import { trackApiRequest } from "../../utils/apiLoader";
 
 type LoginWithUsernamePasswordParams = {
   username: string;
@@ -48,7 +49,7 @@ export const loginWithUsernamePassword = async ({
       password,
     });
 
-    const response = await fetch(LOGIN_API_URL, {
+    const response = await trackApiRequest(fetch(LOGIN_API_URL, {
       method: "POST",
       headers: {
         accept: "application/json, text/plain, */*",
@@ -59,7 +60,7 @@ export const loginWithUsernamePassword = async ({
       body: JSON.stringify({
         payload: encryptedPayload,
       }),
-    });
+    }));
 
     let responseBody: LoginApiResponse | null = null;
     try {

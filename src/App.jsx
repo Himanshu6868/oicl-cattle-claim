@@ -5,6 +5,7 @@ import CattleReidentification from "./pages/CattleReidentification";
 import CattleReidentificationUpload from "./pages/CattleReidentificationUpload";
 import CattleReidentificationResults from "./pages/CattleReidentificationResults";
 import { isAuthenticated } from "./utils/auth";
+import ApiLoaderOverlay from "./components/ApiLoaderOverlay";
 
 function ProtectedRoute({ children }) {
   if (!isAuthenticated()) {
@@ -25,6 +26,7 @@ function PublicOnlyRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
+      <ApiLoaderOverlay />
       <Routes>
         <Route
           path="/"

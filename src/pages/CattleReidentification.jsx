@@ -5,6 +5,7 @@ import StepProgressBar from "../components/StepProgressBar";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { trackApiRequest } from "../utils/apiLoader";
 import "../cattle.css";
 
 const CLAIM_DETAILS_API_URL =
@@ -42,7 +43,7 @@ function CattleReidentification() {
 
     const encryptedPayload = await encryptPayload(payload);
 
-    const response = await fetch(apiUrl, {
+    const response = await trackApiRequest(fetch(apiUrl, {
       method: "POST",
       headers: {
         accept: "application/json, text/plain, */*",
@@ -54,7 +55,7 @@ function CattleReidentification() {
       body: JSON.stringify({
         payload: encryptedPayload,
       }),
-    });
+    }));
 
     let responseBody = null;
     try {
