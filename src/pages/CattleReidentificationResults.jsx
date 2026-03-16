@@ -4,6 +4,7 @@ import cattleIllustration from "../assets/cattle-illustration.png";
 import StepProgressBar from "../components/StepProgressBar";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
+import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
 
 const FETCH_OCR_DATA_API_URL =
@@ -24,28 +25,26 @@ function CattleReidentificationResults() {
   const claimNumber = state?.claimNumber?.trim() || "";
   const [ocrData, setOcrData] = useState(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
-  const [resultsError, setResultsError] = useState("");
+  const { showToast } = useToast();
 
   const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
 
   useEffect(() => {
     const fetchOcrData = async () => {
       if (!claimNumber) {
-        setResultsError("Claim number is missing. Please go back and try again.");
+        showToast("Claim number is missing. Please go back and try again.");
         return;
       }
 
       const token = getRequestToken();
 
       if (!token) {
-        setResultsError("Authentication required. Please login again.");
+        showToast("Authentication required. Please login again.");
         navigate("/", { replace: true });
         return;
       }
 
       setIsLoadingResults(true);
-      setResultsError("");
-
       const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(claimNumber)}`;
 
       try {
@@ -79,11 +78,10 @@ function CattleReidentificationResults() {
 
         setOcrData(responseBody);
       } catch (error) {
-        setResultsError(
-          error instanceof Error
-            ? error.message
-            : "Unexpected error occurred while fetching cattle reidentification results.",
-        );
+        const errorMessage = error instanceof Error
+        ? error.message
+        : "Unexpected error occurred while fetching cattle reidentification results.";
+      showToast(errorMessage);
       } finally {
         setIsLoadingResults(false);
       }
@@ -164,7 +162,6 @@ function CattleReidentificationResults() {
       <section className="similarity-container">
         <div className="claim-header">Image Similarity Results</div>
         {isLoadingResults ? <p className="upload-helper-text">Loading similarity results...</p> : null}
-        {resultsError ? <p className="field-error">{resultsError}</p> : null}
         <div className="similarity-table-wrapper">
           <table className="similarity-table">
             <thead>

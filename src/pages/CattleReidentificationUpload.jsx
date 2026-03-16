@@ -5,6 +5,7 @@ import StepProgressBar from "../components/StepProgressBar";
 import { encryptPayload } from "../utils/encryption";
 import { clearAuthToken, getAuthToken } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
+import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
 import downloadIcon from "../assets/download.png";
 import deleteIcon from "../assets/bin.png";
@@ -25,7 +26,7 @@ function CattleReidentificationUpload() {
   const [currentStep, setCurrentStep] = useState(state?.currentStep || 2);
   const [liveImages, setLiveImages] = useState([]);
   const [deadImages, setDeadImages] = useState([]);
-  const [uploadValidationError, setUploadValidationError] = useState("");
+  const { showToast } = useToast();
   const [isValidatingUploads, setIsValidatingUploads] = useState(false);
   const [isClaimantDetailsOpen, setIsClaimantDetailsOpen] = useState(true);
   const [isUploadPhotosOpen, setIsUploadPhotosOpen] = useState(true);
@@ -219,12 +220,8 @@ function CattleReidentificationUpload() {
   };
 
   const handleUploadDetailsNext = async () => {
-    setUploadValidationError("");
-
     if (!liveImages.length || !deadImages.length) {
-      setUploadValidationError(
-        "Please upload at least one Live Cattle Photo and one Dead Cattle Photo to continue.",
-      );
+      showToast("Please upload at least one Live Cattle Photo and one Dead Cattle Photo to continue.");
       return;
     }
 
@@ -250,11 +247,10 @@ function CattleReidentificationUpload() {
         return;
       }
 
-      setUploadValidationError(
-        error instanceof Error
-          ? error.message
-          : "Unexpected error occurred while validating uploaded cattle photos.",
-      );
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Unexpected error occurred while validating uploaded cattle photos.";
+      showToast(errorMessage);
     } finally {
       setIsValidatingUploads(false);
     }
@@ -279,6 +275,8 @@ function CattleReidentificationUpload() {
       );
     } catch (error) {
       console.error("Failed to delete file:", file.fileName, error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete file.";
+      showToast(errorMessage);
     }
   };
 
@@ -320,6 +318,8 @@ function CattleReidentificationUpload() {
         });
       } catch (error) {
         console.error("Failed to upload file:", file.name, error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to upload file.";
+        showToast(errorMessage);
       }
     }
 
@@ -495,8 +495,6 @@ function CattleReidentificationUpload() {
               </div>
             </div>
 
-
-            {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
           </div>
         </div>
         <div className="" style={{ display: "flex", justifyContent: "flex-start", marginTop: "20px" }}>

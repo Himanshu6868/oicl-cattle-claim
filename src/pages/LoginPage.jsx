@@ -3,6 +3,7 @@ import "../App.css";
 import { useNavigate } from "react-router-dom";
 import { loginWithUsernamePassword } from "../utils/authApi";
 import { setAuthToken } from "../utils/auth";
+import { useToast } from "../components/ToastProvider";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { showToast } = useToast();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -30,7 +32,9 @@ function LoginPage() {
       setAuthToken(token);
       navigate("/dashboard", { replace: true });
     } catch (error) {
-      setErrorMessage(error.message || "Unable to login.");
+      const apiError = error instanceof Error ? error.message : "Unable to login.";
+      showToast(apiError);
+      setErrorMessage("");
     } finally {
       setIsSubmitting(false);
     }
