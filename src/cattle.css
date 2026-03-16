@@ -158,23 +158,26 @@
   }
 
   .accordion-panel {
-    display: grid;
-    transition: grid-template-rows 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
   }
 
-  .accordion-panel > * {
+
+  .accordion-panel>* {
     overflow: hidden;
   }
 
   .accordion-panel.is-open {
-    grid-template-rows: 1fr;
-    opacity: 1;
-  }
+  max-height: 1000px; /* large enough for content */
+  opacity: 1;
+}
 
-  .accordion-panel.is-closed {
-    grid-template-rows: 0fr;
-    opacity: 0;
-  }
+ .accordion-panel.is-closed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
   .form-row {
     display: flex;
