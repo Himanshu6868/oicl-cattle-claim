@@ -7,9 +7,16 @@ function StepProgressBar({ currentStep }) {
     return "";
   };
 
+  const progressWidth = ((currentStep - 1) / (STEP_ITEMS.length - 1)) * 100;
+
   return (
     <div className="stepper-container" aria-label="Cattle reidentification progress">
-      <div className="stepper-line" aria-hidden="true"></div>
+      <div className="progress-line" aria-hidden="true"></div>
+      <div
+        className="progress-active"
+        style={{ width: `${progressWidth}%` }}
+        aria-hidden="true"
+      ></div>
 
       {STEP_ITEMS.map((stepLabel, index) => {
         const stepNumber = index + 1;
@@ -18,10 +25,10 @@ function StepProgressBar({ currentStep }) {
         return (
           <div className="step" key={stepLabel}>
             <div
-              className={`step-circle ${stepClass}`.trim()}
+              className={`circle ${stepClass}`.trim()}
               aria-current={currentStep === stepNumber ? "step" : undefined}
             >
-              {stepClass === "completed" ? "✔" : stepNumber}
+              {stepClass === "completed" ? "✓" : stepNumber}
             </div>
             <span>{stepLabel}</span>
           </div>

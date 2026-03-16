@@ -25,7 +25,7 @@
   margin: 40px auto;
 }
 
-.stepper-line {
+.progress-line {
   position: absolute;
   top: 18px;
   left: 18px;
@@ -35,13 +35,24 @@
   z-index: 0;
 }
 
+.progress-active {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  height: 4px;
+  background: #1f6ed4;
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
 .step {
   position: relative;
   text-align: center;
   flex: 1;
+  z-index: 2;
 }
 
-.step-circle {
+.circle {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -50,26 +61,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
   margin: 0 auto;
-  position: relative;
-  z-index: 2;
+  font-weight: 600;
 }
 
-.step:first-child .step-circle {
-  margin-left: 0;
-}
-
-.step:last-child .step-circle {
-  margin-right: 0;
-}
-
-.step-circle.active {
+.circle.active {
   background: #1f6ed4;
   color: #fff;
 }
 
-.step-circle.completed {
+.circle.completed {
   background: #1f6ed4;
   color: #fff;
 }
