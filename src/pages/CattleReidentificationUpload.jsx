@@ -352,11 +352,14 @@ function CattleReidentificationUpload() {
             aria-controls="claimant-details-panel"
           >
             <span>Claimant Details</span>
-            <span className="accordion-icon" aria-hidden="true">{isClaimantDetailsOpen ? "−" : "+"}</span>
+            <span className="accordion-icon" aria-hidden="true">{isClaimantDetailsOpen ? "▴" : "▾"}</span>
           </button>
 
-          {isClaimantDetailsOpen ? (
-            <div id="claimant-details-panel">
+          <div
+            id="claimant-details-panel"
+            className={`accordion-panel ${isClaimantDetailsOpen ? "is-open" : "is-closed"}`}
+            aria-hidden={!isClaimantDetailsOpen}
+          >
               <div className="form-row">
                 <div className="field">
                   <label>Claim Number *</label>
@@ -381,7 +384,6 @@ function CattleReidentificationUpload() {
                 Back to Claimant Details
               </button>
             </div>
-          ) : null}
         </div>
 
         <div className="upload-box">
@@ -393,11 +395,14 @@ function CattleReidentificationUpload() {
             aria-controls="upload-photos-panel"
           >
             <span>Upload Cattle Photos</span>
-            <span className="accordion-icon" aria-hidden="true">{isUploadPhotosOpen ? "−" : "+"}</span>
+            <span className="accordion-icon" aria-hidden="true">{isUploadPhotosOpen ? "▴" : "▾"}</span>
           </button>
 
-          {isUploadPhotosOpen ? (
-            <div id="upload-photos-panel">
+          <div
+            id="upload-photos-panel"
+            className={`accordion-panel ${isUploadPhotosOpen ? "is-open" : "is-closed"}`}
+            aria-hidden={!isUploadPhotosOpen}
+          >
               <div className="form-row upload-form-row">
             <div className="field upload-field">
               <label className="upload-control">
@@ -493,7 +498,7 @@ function CattleReidentificationUpload() {
               </button>
               {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
             </div>
-          ) : null}
+          </div>
         </div>
       </div>
     </div>
