@@ -129,7 +129,7 @@ function CattleReidentification() {
       <Navbar />
 
       <div className="cattle-page">
-        <div className="breadcrumb">
+        <div className="breadcrumb" style={{marginBottom: "10px"}}>
           Home &gt; Digital Products & Services &gt; Cattle Reidentification
         </div>
 
