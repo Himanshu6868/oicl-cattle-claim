@@ -360,30 +360,30 @@ function CattleReidentificationUpload() {
             className={`accordion-panel ${isClaimantDetailsOpen ? "is-open" : "is-closed"}`}
             aria-hidden={!isClaimantDetailsOpen}
           >
-              <div className="form-row">
-                <div className="field">
-                  <label>Claim Number *</label>
-                  <input value={claimNumber} placeholder="Enter claim number" disabled />
-                </div>
-
-                <div className="field">
-                  <label>Policy Number *</label>
-                  <input value={policyNumber} placeholder="Enter policy number" disabled />
-                </div>
+            <div className="form-row">
+              <div className="field">
+                <label>Claim Number *</label>
+                <input value={claimNumber} placeholder="Enter claim number" disabled />
               </div>
 
-              <button
-                className="next-btn secondary-nav-btn"
-                type="button"
-                onClick={() =>
-                  navigate("/cattle-reidentification", {
-                    state: { claimNumber, policyNumber, currentStep: 1 },
-                  })
-                }
-              >
-                Back to Claimant Details
-              </button>
+              <div className="field">
+                <label>Policy Number *</label>
+                <input value={policyNumber} placeholder="Enter policy number" disabled />
+              </div>
             </div>
+
+            {/* <button
+              className="next-btn secondary-nav-btn"
+              type="button"
+              onClick={() =>
+                navigate("/cattle-reidentification", {
+                  state: { claimNumber, policyNumber, currentStep: 1 },
+                })
+              }
+            >
+              Back to Claimant Details
+            </button> */}
+          </div>
         </div>
 
         <div className="upload-box">
@@ -403,104 +403,117 @@ function CattleReidentificationUpload() {
             className={`accordion-panel ${isUploadPhotosOpen ? "is-open" : "is-closed"}`}
             aria-hidden={!isUploadPhotosOpen}
           >
-              <div className="form-row upload-form-row">
-            <div className="field upload-field">
-              <label className="upload-control">
-                <input
-                  className="upload-input"
-                  type="file"
-                  accept="image/png,image/jpg,image/jpeg"
-                  multiple
-                  onChange={(event) => handleFilesChange(event, "live")}
-                />
-                <span className="upload-control-text">
-                  Upload Live Cattle Photos <span className="required-star">*</span>
-                </span>
-                <span className="upload-control-icon" aria-hidden="true">
-                  🔗
-                </span>
-              </label>
-              <p className="upload-helper-text supported-file-text">Supported File Type: .png, .jpg</p>
+            <div className="form-row upload-form-row">
+              <div className="field upload-field">
+                <label className="upload-control">
+                  <input
+                    className="upload-input"
+                    type="file"
+                    accept="image/png,image/jpg,image/jpeg"
+                    multiple
+                    onChange={(event) => handleFilesChange(event, "live")}
+                  />
+                  <span className="upload-control-text">
+                    Upload Live Cattle Photos <span className="required-star">*</span>
+                  </span>
+                  <span className="upload-control-icon" aria-hidden="true">
+                    🔗
+                  </span>
+                </label>
+                <p className="upload-helper-text supported-file-text">Supported File Type: .png, .jpg</p>
 
-              <ul className="file-list">
-                {liveImages.map((file) => (
-                  <li className="uploaded-file-row" key={file.id}>
-                    <span className="file-saved-text">File saved</span>
+                <ul className="file-list">
+                  {liveImages.map((file) => (
+                    <li className="uploaded-file-row" key={file.id}>
+                      <span className="file-saved-text">File saved</span>
 
-                    <div className="file-actions">
-                      <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
+                      <div className="file-actions">
+                        <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
 
-                        <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
-                      </button>
+                          <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
+                        </button>
 
-                      <button
-                        className="file-btn"
-                        type="button"
-                        onClick={() => deleteUploadedFile({ type: "live", file })}
-                      >
-                        <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => deleteUploadedFile({ type: "live", file })}
+                        >
+                          <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="field upload-field">
+                <label className="upload-control">
+                  <input
+                    className="upload-input"
+                    type="file"
+                    accept="image/png,image/jpg,image/jpeg"
+                    multiple
+                    onChange={(event) => handleFilesChange(event, "dead")}
+                  />
+                  <span className="upload-control-text">
+                    Upload Dead Cattle Photos <span className="required-star">*</span>
+                  </span>
+                  <span className="upload-control-icon" aria-hidden="true">
+                    🔗
+                  </span>
+                </label>
+                <p className="upload-helper-text supported-file-text">Supported File Type: .png, .jpg</p>
+
+                <ul className="file-list">
+                  {deadImages.map((file) => (
+                    <li className="uploaded-file-row" key={file.id}>
+                      <span className="file-saved-text">File saved</span>
+
+                      <div className="file-actions">
+                        <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
+                          <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
+                        </button>
+
+                        <button
+                          className="file-btn"
+                          type="button"
+                          onClick={() => deleteUploadedFile({ type: "dead", file })}
+                        >
+                          <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            <div className="field upload-field">
-              <label className="upload-control">
-                <input
-                  className="upload-input"
-                  type="file"
-                  accept="image/png,image/jpg,image/jpeg"
-                  multiple
-                  onChange={(event) => handleFilesChange(event, "dead")}
-                />
-                <span className="upload-control-text">
-                  Upload Dead Cattle Photos <span className="required-star">*</span>
-                </span>
-                <span className="upload-control-icon" aria-hidden="true">
-                  🔗
-                </span>
-              </label>
-              <p className="upload-helper-text supported-file-text">Supported File Type: .png, .jpg</p>
 
-              <ul className="file-list">
-                {deadImages.map((file) => (
-                  <li className="uploaded-file-row" key={file.id}>
-                    <span className="file-saved-text">File saved</span>
-
-                    <div className="file-actions">
-                      <button className="file-btn" type="button" onClick={() => openUploadedFile(file.url)}>
-                        <img className="file-btn-icon" src={downloadIcon} alt="Download file" />
-                      </button>
-
-                      <button
-                        className="file-btn"
-                        type="button"
-                        onClick={() => deleteUploadedFile({ type: "dead", file })}
-                      >
-                        <img className="file-btn-icon" src={deleteIcon} alt="Delete file" />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-              <button
-                className="next-btn validate-btn"
-                type="button"
-                onClick={handleUploadDetailsNext}
-                disabled={isValidatingUploads}
-              >
-                {isValidatingUploads ? "Validating..." : "Validate"}
-              </button>
-              {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
-            </div>
+            {uploadValidationError ? <p className="field-error">{uploadValidationError}</p> : null}
           </div>
         </div>
+        <div className="" style={{ display: "flex", justifyContent: "flex-start", marginTop: "20px" }}>
+          <button
+            // className="next-btn validate-btn"
+            type="button"
+            onClick={handleUploadDetailsNext}
+            disabled={isValidatingUploads}
+            style={{
+              margin: "0",
+              width: "160px",
+              height: "40px",
+              background: "#c85100",
+              color: "white",
+              border: "none",
+              borderRadius: " 4px",
+              cursor: "pointer",
+            }}
+          >
+            {isValidatingUploads ? "Validating..." : "Validate"}
+          </button>
+        </div>
       </div>
+    </div>
   );
 }
 
