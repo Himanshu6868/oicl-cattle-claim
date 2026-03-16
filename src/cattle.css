@@ -134,12 +134,11 @@
     background: #fff;
   }
 
-  .claim-header {
-    background: #eef1f4;
+.claim-header {
+    background: #edf4fc;
     padding: 12px 16px;
     font-weight: 600;
   }
-
 
   .accordion-toggle {
     width: 100%;

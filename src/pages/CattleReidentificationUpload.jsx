@@ -362,12 +362,12 @@ function CattleReidentificationUpload() {
           >
             <div className="form-row">
               <div className="field">
-                <label>Claim Number *</label>
+                <label>Claim Number <span className="required-star">*</span></label>
                 <input value={claimNumber} placeholder="Enter claim number" disabled />
               </div>
 
               <div className="field">
-                <label>Policy Number *</label>
+                <label>Policy Number <span className="required-star">*</span></label>
                 <input value={policyNumber} placeholder="Enter policy number" disabled />
               </div>
             </div>

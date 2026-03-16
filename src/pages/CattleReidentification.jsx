@@ -154,7 +154,7 @@ function CattleReidentification() {
 
             <div className="form-row">
               <div className="field">
-                <label>Claim Number *</label>
+                <label>Claim Number <span className="required-star">*</span></label>
                 <input
                   value={claimNumber}
                   onChange={(event) => setClaimNumber(event.target.value)}
@@ -166,7 +166,7 @@ function CattleReidentification() {
               </div>
 
               <div className="field">
-                <label>Policy Number *</label>
+                <label>Policy Number <span className="required-star">*</span></label>
                 <input
                   value={policyNumber}
                   onChange={(event) => setPolicyNumber(event.target.value)}
