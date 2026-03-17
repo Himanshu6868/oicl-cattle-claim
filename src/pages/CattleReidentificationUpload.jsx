@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import StepProgressBar from "../components/StepProgressBar";
 import { encryptPayload } from "../utils/encryption";
-import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { clearAuthToken, getAuthToken, getAuthorizationHeaderValue } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
 import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
@@ -41,7 +41,7 @@ function CattleReidentificationUpload() {
     }
   }, [claimNumber, navigate, policyNumber]);
 
-  const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
+  const getRequestToken = () => getAuthToken();
 
   const postEncryptedApiRequest = async (apiUrl, payload) => {
     const token = getRequestToken();
@@ -59,7 +59,7 @@ function CattleReidentificationUpload() {
         "content-type": "application/json",
         "x-language": "en",
         "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
+        Authorization: getAuthorizationHeaderValue(token),
       },
       body: JSON.stringify({
         payload: encryptedPayload,
@@ -75,7 +75,6 @@ function CattleReidentificationUpload() {
 
     if (response.status === 401) {
       clearAuthToken();
-      localStorage.removeItem("token");
       navigate("/", { replace: true });
       throw new Error("Session expired. Please login again.");
     }
@@ -161,7 +160,7 @@ function CattleReidentificationUpload() {
         "content-type": "application/json",
         "x-language": "en",
         "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
+        Authorization: getAuthorizationHeaderValue(token),
       },
       body: JSON.stringify({
         payload: await encryptPayload({ documentType }),
@@ -177,7 +176,6 @@ function CattleReidentificationUpload() {
 
     if (response.status === 401) {
       clearAuthToken();
-      localStorage.removeItem("token");
       navigate("/", { replace: true });
       throw new Error("Session expired. Please login again.");
     }
@@ -265,7 +263,7 @@ function CattleReidentificationUpload() {
         accept: "application/json, text/plain, */*",
         "x-language": "en",
         "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
+        Authorization: getAuthorizationHeaderValue(token),
       },
     }));
 
@@ -278,7 +276,6 @@ function CattleReidentificationUpload() {
 
     if (response.status === 401) {
       clearAuthToken();
-      localStorage.removeItem("token");
       navigate("/", { replace: true });
       throw new Error("Session expired. Please login again.");
     }

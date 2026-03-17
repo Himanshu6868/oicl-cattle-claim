@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import StepProgressBar from "../components/StepProgressBar";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import { encryptPayload } from "../utils/encryption";
-import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { clearAuthToken, getAuthToken, getAuthorizationHeaderValue } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
 import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
@@ -33,7 +33,7 @@ function CattleReidentification() {
     setCurrentStep(state?.currentStep || 1);
   }, [state]);
 
-  const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
+  const getRequestToken = () => getAuthToken();
 
   const postEncryptedApiRequest = async (apiUrl, payload) => {
     const token = getRequestToken();
@@ -51,7 +51,7 @@ function CattleReidentification() {
         "content-type": "application/json",
         "x-language": "en",
         "x-source": "WEB",
-        Authorization: `Bearer ${token}`,
+        Authorization: getAuthorizationHeaderValue(token),
       },
       body: JSON.stringify({
         payload: encryptedPayload,
@@ -67,7 +67,6 @@ function CattleReidentification() {
 
     if (response.status === 401) {
       clearAuthToken();
-      localStorage.removeItem("token");
       navigate("/", { replace: true });
       throw new Error("Session expired. Please login again.");
     }
@@ -148,8 +147,9 @@ function CattleReidentification() {
         </div>
 
         <div className="content-layout">
-          <div className="claim-box">
+          <div className="claim-box claimant-details-box">
             <div className="claim-header">Claimant Details</div>
+
 
             <div className="form-row">
               <div className="field">
