@@ -10,6 +10,8 @@ import "../cattle.css";
 const FETCH_OCR_DATA_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
+const encodeQueryParamPreservingSlash = (value) => encodeURIComponent(value).replaceAll("%2F", "/");
+
 const formatSimilarity = (value) => {
   if (typeof value !== "number") {
     return "0.00";
@@ -45,7 +47,7 @@ function CattleReidentificationResults() {
       }
 
       setIsLoadingResults(true);
-      const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(claimNumber)}`;
+      const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeQueryParamPreservingSlash(claimNumber)}`;
 
       try {
         const response = await trackApiRequest(fetch(requestUrl, {
