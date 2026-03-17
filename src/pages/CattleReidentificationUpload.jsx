@@ -14,6 +14,8 @@ const UPLOAD_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/upload-docs";
 const DELETE_DOCUMENT_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/delete-doc";
+const GET_DOCUMENTS_API_URL =
+  "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/get-docs";
 const FETCH_OCR_DATA_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
@@ -117,6 +119,30 @@ function CattleReidentificationUpload() {
     return { uploadUrl, documentId };
   };
 
+  const normalizeFetchedDocuments = (documents = []) => (
+    documents.map((document, index) => ({
+      id: document?.id || `${document?.fileName || "document"}-${index}`,
+      documentId: document?.id || null,
+      fileName: document?.fileName || "Uploaded file",
+      url: document?.url || "",
+      documentType: document?.documentType || "",
+    }))
+  );
+
+  const fetchUploadedDocuments = async () => {
+    const responseBody = await postEncryptedApiRequest(GET_DOCUMENTS_API_URL, {
+      id: "",
+      claimNumber,
+    });
+
+    const responseData = responseBody?.data ?? responseBody;
+    const documents = Array.isArray(responseData) ? responseData : [];
+    const normalizedDocuments = normalizeFetchedDocuments(documents);
+
+    setLiveImages(normalizedDocuments.filter((document) => document.documentType === "ALIVE"));
+    setDeadImages(normalizedDocuments.filter((document) => document.documentType === "DEAD"));
+  };
+
   const deleteDocumentRequest = async ({ documentId, documentType }) => {
     const token = getRequestToken();
 
@@ -176,8 +202,51 @@ function CattleReidentificationUpload() {
   };
 
   const openUploadedFile = (fileUrl) => {
+    if (!fileUrl) {
+      showToast("Unable to open file. URL not available.");
+      return;
+    }
+
     window.open(fileUrl, "_blank");
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadUploadedDocuments = async () => {
+      if (!claimNumber || !policyNumber) {
+        return;
+      }
+
+      try {
+        await fetchUploadedDocuments();
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        if (error instanceof Error && error.message === "Session expired. Please login again.") {
+          return;
+        }
+
+        if (error instanceof Error && error.message === "Authentication required. Please login again.") {
+          navigate("/", { replace: true });
+          return;
+        }
+
+        const errorMessage = error instanceof Error
+          ? error.message
+          : "Failed to fetch uploaded documents.";
+        showToast(errorMessage);
+      }
+    };
+
+    loadUploadedDocuments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [claimNumber, navigate, policyNumber, showToast]);
 
   const fetchOcrData = async () => {
     const token = getRequestToken();
@@ -296,8 +365,6 @@ function CattleReidentificationUpload() {
       return;
     }
 
-    const uploadedFiles = [];
-
     for (const file of files) {
       try {
         const { uploadUrl, documentId } = await getUploadDetails({
@@ -311,13 +378,6 @@ function CattleReidentificationUpload() {
         }
 
         await uploadFileToS3(uploadUrl, file);
-        uploadedFiles.push({
-          id: documentId || `${file.name}-${file.lastModified}`,
-          documentId,
-          fileName: file.name,
-          url: uploadUrl,
-          rawFile: file,
-        });
       } catch (error) {
         console.error("Failed to upload file:", file.name, error);
         const errorMessage = error instanceof Error ? error.message : "Failed to upload file.";
@@ -325,12 +385,7 @@ function CattleReidentificationUpload() {
       }
     }
 
-    if (type === "live") {
-      setLiveImages(uploadedFiles);
-      return;
-    }
-
-    setDeadImages(uploadedFiles);
+    await fetchUploadedDocuments();
   };
 
   return (
