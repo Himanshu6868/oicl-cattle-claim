@@ -25,6 +25,7 @@ function CattleReidentificationResults() {
   const { state } = useLocation();
   const currentStep = state?.currentStep || 3;
   const claimNumber = state?.claimNumber?.trim() || "";
+  const policyNumber = state?.policyNumber?.trim() || "";
   const [ocrData, setOcrData] = useState(null);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const { showToast } = useToast();
@@ -33,8 +34,8 @@ function CattleReidentificationResults() {
 
   useEffect(() => {
     const fetchOcrData = async () => {
-      if (!claimNumber) {
-        showToast("Claim number is missing. Please go back and try again.");
+      if (!claimNumber || !policyNumber) {
+        showToast("Claim number or policy number is missing. Please go back and try again.");
         return;
       }
 
@@ -47,7 +48,9 @@ function CattleReidentificationResults() {
       }
 
       setIsLoadingResults(true);
-      const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeQueryParamPreservingSlash(claimNumber)}`;
+      const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeQueryParamPreservingSlash(
+        claimNumber,
+      )}&policyNumber=${encodeQueryParamPreservingSlash(policyNumber)}`;
 
       try {
         const response = await trackApiRequest(fetch(requestUrl, {
@@ -90,7 +93,7 @@ function CattleReidentificationResults() {
     };
 
     fetchOcrData();
-  }, [claimNumber, navigate]);
+  }, [claimNumber, navigate, policyNumber, showToast]);
 
   const similarityData = useMemo(() => {
     const analysisRows = ocrData?.verificationAnalysisDetails || [];
