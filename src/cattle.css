@@ -184,6 +184,17 @@
     padding: 25px;
   }
 
+
+  .claimant-details-box {
+    max-width: 350px;
+  }
+
+  .form-row {
+    flex-wrap: wrap;
+  }
+
+
+
   .field {
     flex: 1;
   }

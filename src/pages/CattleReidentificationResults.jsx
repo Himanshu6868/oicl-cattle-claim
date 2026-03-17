@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import cattleIllustration from "../assets/cattle-illustration.png";
 import StepProgressBar from "../components/StepProgressBar";
-import { clearAuthToken, getAuthToken } from "../utils/auth";
+import { clearAuthToken, getAuthToken, getAuthorizationHeaderValue } from "../utils/auth";
 import { trackApiRequest } from "../utils/apiLoader";
 import { useToast } from "../components/ToastProvider";
 import "../cattle.css";
@@ -30,7 +30,7 @@ function CattleReidentificationResults() {
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   const { showToast } = useToast();
 
-  const getRequestToken = () => getAuthToken() || localStorage.getItem("token");
+  const getRequestToken = () => getAuthToken();
 
   useEffect(() => {
     const fetchOcrData = async () => {
@@ -59,7 +59,7 @@ function CattleReidentificationResults() {
             accept: "application/json, text/plain, */*",
             "x-language": "en",
             "x-source": "WEB",
-            Authorization: `Bearer ${token}`,
+            Authorization: getAuthorizationHeaderValue(token),
           },
         }));
 
@@ -72,7 +72,6 @@ function CattleReidentificationResults() {
 
         if (response.status === 401) {
           clearAuthToken();
-          localStorage.removeItem("token");
           navigate("/", { replace: true });
           throw new Error("Session expired. Please login again.");
         }
@@ -84,9 +83,9 @@ function CattleReidentificationResults() {
         setOcrData(responseBody);
       } catch (error) {
         const errorMessage = error instanceof Error
-        ? error.message
-        : "Unexpected error occurred while fetching cattle reidentification results.";
-      showToast(errorMessage);
+          ? error.message
+          : "Unexpected error occurred while fetching cattle reidentification results.";
+        showToast(errorMessage);
       } finally {
         setIsLoadingResults(false);
       }
