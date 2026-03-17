@@ -17,6 +17,8 @@ const DELETE_DOCUMENT_API_URL =
 const FETCH_OCR_DATA_API_URL =
   "https://y4132nnj76.execute-api.ap-south-1.amazonaws.com/pre-prod/api/v1/claim/cattle/fetch-ocr-data";
 
+const encodeQueryParamPreservingSlash = (value) => encodeURIComponent(value).replaceAll("%2F", "/");
+
 function CattleReidentificationUpload() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -184,9 +186,9 @@ function CattleReidentificationUpload() {
       throw new Error("Authentication required. Please login again.");
     }
 
-    const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeURIComponent(
+    const requestUrl = `${FETCH_OCR_DATA_API_URL}?claimNumber=${encodeQueryParamPreservingSlash(
       claimNumber,
-    )}&policyNumber=${encodeURIComponent(policyNumber)}`;
+    )}&policyNumber=${encodeQueryParamPreservingSlash(policyNumber)}`;
 
     const response = await trackApiRequest(fetch(requestUrl, {
       method: "GET",
